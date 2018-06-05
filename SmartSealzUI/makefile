@@ -23,12 +23,6 @@ LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 OBJS=	main.o
 
 compile: $(OBJS)
-	#gcc -g main.c -o data.out -lwiringPi -lm
-	chmod 777 heartBeats.py
-	gcc -g testPerlOut.c -o TPO.out
-	g++ -std=c++11 -o traffic.out *.cpp
-	chmod 777 GPS.pl
-	gcc RunSSUI.c -o RunSSUI
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm
 	rm -f *.o
 	
@@ -37,7 +31,15 @@ main.o: src/main.c
 
 run: $(OBJS)
 	./SSUI & ./traffic.out & ./TPO.out & python3 heartBeats.py
-	
+
+bg:
+	#gcc -g main.c -o data.out -lwiringPi -lm
+	chmod 777 heartBeats.py
+	gcc -g testPerlOut.c -o TPO.out
+	g++ -std=c++11 -o traffic.out *.cpp
+	chmod 777 GPS.pl
+	gcc RunSSUI.c -o RunSSUI
+	rm -f *.o
 clean:
 	rm -f *.o $(TARGET) 
 	rm -f *.out
