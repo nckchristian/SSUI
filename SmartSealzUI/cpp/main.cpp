@@ -1,4 +1,4 @@
-#include "cpp/easywsclient.hpp"
+#include "easywsclient.hpp"
 //#include "easywsclient.cpp" 
 #include "json/json-forwards.h"
 #include "json/json.h"
