@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string>
 #include <list>
-#include "cpp/traffic.h"
+#include "traffic.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
