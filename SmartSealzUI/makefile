@@ -43,6 +43,6 @@ bg:
 clean:
 	rm -f *.o $(TARGET) 
 	rm -f *.out
-FirstSetup:
+install:
 	gcc -g install.c -o install.exe
 	./install
