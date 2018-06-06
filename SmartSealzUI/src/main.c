@@ -491,7 +491,7 @@ static gboolean _update(){
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
     system(cmd1);
-    FILE *inFile = fopen("DataFiles/out.data","r");//Navigation data file
+    FILE *inFile = fopen("DataFiles/Nav.txt","r");//Navigation data file
     if(!inFile){
     	printf("HERE NAV\n");
     }
