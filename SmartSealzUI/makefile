@@ -35,7 +35,7 @@ run: $(OBJS)
 bg:
 	#gcc -g main.c -o Nav.exe -lwiringPi -lm
 	chmod 777 heartBeats.py
-	gcc -g testPerlOut.c -o TPO.exe
+	gcc -g PerlOut.c -o TPO.exe
 	g++ -std=c++11 -o traffic.exe *.cpp
 	chmod 777 GPS.pl
 	gcc RunSSUI.c -o RunSSUI.exe
