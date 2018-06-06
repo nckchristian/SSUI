@@ -36,7 +36,7 @@ bg:
 	gcc -g Source/main.c -o Nav.exe -lwiringPi -lm
 	chmod 777 heartBeats.py
 	gcc -g Source/PerlOut.c -o TPO.exe
-	g++ -std=c++11 -o cpp/traffic.exe cpp/easywsclient.cpp cpp/jsoncpp.cpp cpp/traffic.cpp cpp/main.cpp
+	g++ -std=c++11 -o traffic.exe cpp/easywsclient.cpp cpp/jsoncpp.cpp cpp/traffic.cpp cpp/main.cpp
 	chmod 777 GPS.pl
 	gcc RunSSUI.c -o RunSSUI.exe
 	rm -f *.o
