@@ -33,7 +33,7 @@ run: $(OBJS)
 	./SSUI & ./traffic.out & ./TPO.out & python3 heartBeats.py
 
 bg:
-	#gcc -g main.c -o data.out -lwiringPi -lm
+	#gcc -g main.c -o Nav.exe -lwiringPi -lm
 	chmod 777 heartBeats.py
 	gcc -g testPerlOut.c -o TPO.exe
 	g++ -std=c++11 -o traffic.exe *.cpp
