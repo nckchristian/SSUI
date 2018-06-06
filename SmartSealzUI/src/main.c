@@ -488,7 +488,7 @@ double dist=0.0;
 static gboolean _update(){
 	
     char cmd1[50];
-    strcpy(cmd1,"./data.out ");//navigation data connection executible
+    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
     system(cmd1);
     FILE *inFile = fopen("DataFiles/out.data","r");//Navigation data file
