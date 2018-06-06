@@ -480,7 +480,7 @@ int main(int argc, char *argv[])
 		//PrintData();
 		float fAlt=(Altitude /.3048);
 		float fPres = fltd_Pressure /33.8639;
-		outF = fopen("out.data","w");
+		outF = fopen("DataFiles/Nav.txt","w");
 		fprintf(outF,"%d %.2f %d %d",(int) fAlt,fPres,(int) pitchDeg,(int) rollDeg);
 		fclose(outF);
 		//Read at 10HZ (10 times per second)

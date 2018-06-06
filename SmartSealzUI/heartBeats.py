@@ -108,7 +108,7 @@ if __name__ == '__main__':
             BPM=0;
             
         if counter == 50 :
-            out = open("heartrate.txt","w");
+            out = open("DataFiles/heartrate.data","w");
             if BPM >= 1 :
                 out.write(format(BPM));
             else :
