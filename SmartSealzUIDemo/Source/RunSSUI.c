@@ -5,7 +5,7 @@
 
 int main(){
 	char cmd[150];
-	strcpy(cmd,"./SSUI & ./traffic.out & ./TPO.out & python3 heartBeats.py");
+	strcpy(cmd,"./SSUI & ./traffic.exe & ./TPO.exe & python3 heartBeats.py");
 	system(cmd);
 	return 1;
 }

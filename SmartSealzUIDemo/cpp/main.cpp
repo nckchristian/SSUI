@@ -1,4 +1,4 @@
-#include "cpp/easywsclient.hpp"
+#include "easywsclient.hpp"
 //#include "easywsclient.cpp" 
 #include "json/json-forwards.h"
 #include "json/json.h"
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string>
 #include <list>
-#include "cpp/traffic.h"
+#include "traffic.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
