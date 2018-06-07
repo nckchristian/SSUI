@@ -449,7 +449,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 
 //Update gps by running GPS.pl script while connected to stratux wifi
 static gboolean _updateGPS(){
-	FILE *inGPS = fopen("gpsdata.txt","r");
+	FILE *inGPS = fopen("DataFiles/gpsdata.txt","r");
     fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
     
     sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
@@ -488,18 +488,18 @@ double dist=0.0;
 static gboolean _update(){
 	
     char cmd1[50];
-    strcpy(cmd1,"./data.out ");//navigation data connection executible
+    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
     system(cmd1);
-    FILE *inFile = fopen("out.data","r");//Navigation data file
+    FILE *inFile = fopen("DataFiles/Nav.txt","r");//Navigation data file
     if(!inFile){
     	printf("HERE NAV\n");
     }
-    FILE *inADSB = fopen("traffic.txt","r");//Traffic alert file written by main.cpp running in background
+    FILE *inADSB = fopen("DataFiles/traffic.txt","r");//Traffic alert file written by main.cpp running in background
     if(!inADSB){
     	printf("HERE ADSB\n");
     }
-    FILE *inHR = fopen("heartrate.txt","r");//Heart Rate text file being written by heartrate.py in background
+    FILE *inHR = fopen("DataFiles/heartrate.txt","r");//Heart Rate text file being written by heartrate.py in background
     if(!inHR){
     	printf("HERE HR");
     }
@@ -523,7 +523,7 @@ static gboolean _update(){
 	}
     fclose(inADSB);
     
-    inADSB = fopen("traffic.txt","r");
+    inADSB = fopen("DataFiles/traffic.txt","r");
 	char tail[20];
 	double lat=0.0,lon=0.0;
 	int altADSB=0,track=0,speed=0;
@@ -1028,7 +1028,7 @@ int main(int argc, char *argv[])
 	//=========================================================================
 	GtkCssProvider *provider;
 	provider = gtk_css_provider_new();
-	gtk_css_provider_load_from_path(provider, "style.css",NULL);
+	gtk_css_provider_load_from_path(provider, "src/style.css",NULL);
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(provider),GTK_STYLE_PROVIDER_PRIORITY_USER);
 
     g_object_unref(builder);

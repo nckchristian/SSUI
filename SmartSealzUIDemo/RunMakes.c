@@ -1,3 +1,17 @@
+/*
+  USED ONLY FOR DEVELOPMENT PURPOSES
+  Allows developer to chose which sections to re-compile if any editing has been done
+  
+  
+  run command:
+    ./{name of exe} {Number Arg}
+  Arg options:
+    0       = First Ever start up make command
+    1       = Making all background exe that create input for UI
+    2       = Make the UI itself with any UI changes
+    default = Clean the folder up
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
