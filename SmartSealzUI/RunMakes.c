@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
   
   switch(makeCommand){
     case 0:
-      system("make FirstSetup");
+      system("make install");
       break;
     case 1:
       system("make bg");
