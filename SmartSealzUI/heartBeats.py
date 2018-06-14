@@ -12,6 +12,7 @@
 # License: MIT
 
 import time
+import sys
 # Import the ADS1x15 module.
 # sudo pip install adafruit-ads1x15
 import Adafruit_ADS1x15
@@ -123,4 +124,4 @@ while True:
         print("Heart Rate Monitor Reading Error Occured")
         lgs = open("LoggingFile.txt","a")
         lgs.write("Error in heartBeats.py")
-        os._exit(0)
+        sys.exit(0)
