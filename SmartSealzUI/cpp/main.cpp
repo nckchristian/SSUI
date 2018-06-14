@@ -174,6 +174,10 @@ int main()
 #endif
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
+    if(stratuxTraffic==NULL){
+        printf("Error in Main.cpp");
+        return 1;
+    }
     assert(stratuxTraffic);
 
     while (stratuxTraffic->getReadyState() != WebSocket::CLOSED) {
