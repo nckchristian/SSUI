@@ -178,7 +178,7 @@ int main()
     if(stratuxTraffic==NULL){
         printf("Error in Main.cpp");
         outF=fopen("LoggingFile.txt","a");
-        fprintf(outF,"Error in main.cpp");
+        fprintf(outF,"Error in main.cpp\n");
         return 1;
     }
     assert(stratuxTraffic);
