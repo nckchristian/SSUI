@@ -175,13 +175,11 @@ int main()
 #endif
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
-    if(stratuxTraffic==NULL){
-        while(stratuxTraffic==NULL){
-            printf("Error in Main.cpp");
-            outF=fopen("LoggingFile.txt","a");
-            fprintf(outF,"Error in main.cpp\n");
-            stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
-        }
+    while(stratuxTraffic==NULL){
+        printf("Error in Main.cpp");
+        outF=fopen("LoggingFile.txt","a");
+        fprintf(outF,"Error in main.cpp\n");
+        stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
     }
     assert(stratuxTraffic);
 
