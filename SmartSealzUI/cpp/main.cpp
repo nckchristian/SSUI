@@ -179,6 +179,7 @@ int main()
         printf("Error in Main.cpp");
         outF=fopen("LoggingFile.txt","a");
         fprintf(outF,"Error in main.cpp\n");
+        fclose(outF);
         stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
     }
     assert(stratuxTraffic);
