@@ -123,6 +123,6 @@ while True:
     except:
         print("Heart Rate Monitor Reading Error Occured")
         lgs = open("LoggingFile.txt","a")
-        lgs.write("Error in heartBeats.py")
+        lgs.write("Error in heartBeats.py\n")
         time.sleep(10)
         
