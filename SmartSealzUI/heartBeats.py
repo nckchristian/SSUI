@@ -124,4 +124,3 @@ while True:
         print("Heart Rate Monitor Reading Error Occured")
         lgs = open("LoggingFile.txt","a")
         lgs.write("Error in heartBeats.py")
-        sys.exit(0)
