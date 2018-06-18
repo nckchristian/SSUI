@@ -162,6 +162,7 @@ void handle_traffic_message(const std::string & message)
 // This program has only been tested on a linux machine.
 int main()
 {
+    FILE *outF;
 #ifdef _WIN32
     INT rc;
     WSADATA wsaData;
@@ -174,6 +175,12 @@ int main()
 #endif
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
+    while(stratuxTraffic==NULL){
+        outF=fopen("LoggingFile.txt","a");
+        fprintf(outF,"Error in main.cpp\n");
+        fclose(outF);
+        stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
+    }
     assert(stratuxTraffic);
 
     while (stratuxTraffic->getReadyState() != WebSocket::CLOSED) {
