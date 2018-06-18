@@ -110,7 +110,7 @@ while True:
                     BPM=0;
 
                 if counter == 50 :
-                    out = open("DataFiles/heartrate.data","w");
+                    out = open("DataFiles/heartrate.txt","w");
                     if BPM >= 1 :
                         out.write(format(BPM));
                     else :
