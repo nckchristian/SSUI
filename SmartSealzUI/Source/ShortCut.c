@@ -3,5 +3,5 @@
 #include <string.h>
 
 int main(){
-  system("./SB/SSUI/SmartSealzUI/RunSSUI.exe");
+  system("cd /SB/master/SSUI/SmartSealzUI && ./RunSSUI.exe");
 }
