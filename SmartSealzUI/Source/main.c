@@ -1,3 +1,5 @@
+/*This is the main driving program for the Navigation data from the GY-86 Chip*/
+//Libraries Included
 #include  <wiringPiI2C.h>
 #include  <stdio.h>
 #include  <math.h>
@@ -8,7 +10,6 @@
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-/******************************************************************************/
 #include <stdint.h>
 #include <errno.h>
 #include <unistd.h>
@@ -19,6 +20,7 @@
 #include <linux/types.h>
 #include <time.h>
 
+//Definition for chip ports
 #define MS5611_ADDRESS 0x77
 
 #define CONV_D1_256   0x40
@@ -40,9 +42,47 @@
 #define OSR_2048     5000 //us
 #define OSR_4096     10000 //us
 
+//Global Definitions
 #define alpha 0.96
 #define beta 0.96
 #define gamma 0.96
+
+/******************************************************************************/
+// ================================================================
+// ===                  Global Variables                        ===
+// ================================================================
+int fd;
+int acclX, acclY, acclZ;
+int gyroX, gyroY, gyroZ,temp;
+double acclX_scaled, acclY_scaled, acclZ_scaled;
+double gyroX_scaled, gyroY_scaled, gyroZ_scaled;
+float dt=0.02;
+int rX, rY, rZ;
+float prevPitch = 0;
+float prevRoll = 0;
+float gyroPitch = 0.0;
+float gyroRoll = 0.0;
+float gyroYaw = 0.0;
+float accelPitch = 0.0;
+float accelRoll = 0.0;
+float roll = 0.0;
+float pitch = 0.0;
+float yaw = 0.0;
+float yawRad;
+float rotX=0.0,rotY=0.0;
+float pitchDeg=0.0,rollDeg=0.0,yawDeg=0.0;
+double Temparature=0.0, fltd_Temparature=0.0;
+double Pressure=0.0, fltd_Pressure=0.0;
+float Altitude=0.0, pre_Altitude=0.0;
+int roc=0, fltd_roc=0;
+long curSampled_time = 0;
+long prevSampled_time = 0;
+float Sampling_time=0.0, prevSampling_time=0.0;
+float rollRad=0.0,pitchRad=0.0;
+int xMag=0,yMag=0,zMag=0;
+struct timespec spec;
+double SEA_LEVEL_PRESSURE;
+////////////////////////////////////////////////////////////////////////////////
 
 /*****************************************************************************/
 //Used in setup of main for Barometric pressure
@@ -100,42 +140,6 @@ long CONV_read(int DA, char CONV_CMD)
 
 	return ret;
 }
-////////////////////////////////////////////////////////////////////////////////
-/******************************************************************************/
-// ================================================================
-// ===                  Global Variables                        ===
-// ================================================================
-int fd;
-int acclX, acclY, acclZ;
-int gyroX, gyroY, gyroZ,temp;
-double acclX_scaled, acclY_scaled, acclZ_scaled;
-double gyroX_scaled, gyroY_scaled, gyroZ_scaled;
-float dt=0.02;
-int rX, rY, rZ;
-float prevPitch = 0;
-float prevRoll = 0;
-float gyroPitch = 0.0;
-float gyroRoll = 0.0;
-float gyroYaw = 0.0;
-float accelPitch = 0.0;
-float accelRoll = 0.0;
-float roll = 0.0;
-float pitch = 0.0;
-float yaw = 0.0;
-float yawRad;
-float rotX=0.0,rotY=0.0;
-float pitchDeg=0.0,rollDeg=0.0,yawDeg=0.0;
-double Temparature=0.0, fltd_Temparature=0.0;
-double Pressure=0.0, fltd_Pressure=0.0;
-float Altitude=0.0, pre_Altitude=0.0;
-int roc=0, fltd_roc=0;
-long curSampled_time = 0;
-long prevSampled_time = 0;
-float Sampling_time=0.0, prevSampling_time=0.0;
-float rollRad=0.0,pitchRad=0.0;
-int xMag=0,yMag=0,zMag=0;
-struct timespec spec;
-double SEA_LEVEL_PRESSURE;
 ////////////////////////////////////////////////////////////////////////////////
 // ================================================================
 // ===                  Reading I2C port for MU6050             ===
@@ -348,12 +352,9 @@ int main(int argc, char *argv[])
 	float slpMilB=atof(inArg);
 	slpMilB=(slpMilB/100)*33.8639;
 	SEA_LEVEL_PRESSURE= slpMilB;
-  	
-// ================================================================
-// ===                 MS5611 Portion of Main                   ===
-// ================================================================
-//Example code found at:
-//https://github.com/devkoriel/Raspi-readMS5611/blob/master/readMS5611.c
+	// ===                 MS5611 Portion of Main                   ===
+	//Example code found at:
+	//https://github.com/devkoriel/Raspi-readMS5611/blob/master/readMS5611.c
 	
 	//Variables
 	int i;
@@ -368,7 +369,7 @@ int main(int argc, char *argv[])
 	int64_t SENS;
 	int32_t P;
 	
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	//Opening connection to MS5611
 	if ((fd = open("/dev/i2c-1", O_RDWR)) < 0){
 		printf("Failed to open the bus.\n");
@@ -390,10 +391,6 @@ int main(int argc, char *argv[])
 		C[i] = PROM_read(fd, CMD_PROM_READ + (i * 2));
 		//printf("C[%d] = %d\n", i, C[i]);
 	}
-////////////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////
 	// ================================================================
 	// ===                 While Loop of Main                       ===
 	// ================================================================
@@ -469,7 +466,7 @@ int main(int argc, char *argv[])
 		}
 		fltd_roc = gamma * fltd_roc + (1 - gamma) * roc;
 		pre_Altitude = Altitude;
-	/////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////
 
 		//read MPU6050 sensor
 		readMPU();
