@@ -1,3 +1,4 @@
+/*This Program Runs the main interface and all of the Background executibles needed for the project*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
