@@ -49,4 +49,4 @@ clean:
 	rm -f *.out
 install:
 	gcc -g install.c -o install.exe
-	./install
+	./install.exe
