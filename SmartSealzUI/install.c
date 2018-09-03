@@ -10,6 +10,7 @@ int main(){
 	system("sudo pip3 install adafruit-ads1x15");
 	system("sudo apt-get upgrade");
 	system("sudo apt-get update");
+	system("sudo apt-get install libgtk-3-dev");
 	//printf("sudo perl -MCPAN -e'install \"LWP::Simple\"\'");
 	return 0;
 }
