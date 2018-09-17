@@ -14,7 +14,7 @@ void on_runProgramDemo(){
 }
 
 void on_updateProgram(){
-	system("git pull");
+	system("cd SB/master/SSUI && git pull");
 	system("cd SB/master/SSUI/SmartSealzUI && make bg && make");
 	system("cd SB/master/SSUI/SmartSealzUIDemo && make bg && make");
 }
