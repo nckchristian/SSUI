@@ -23,7 +23,7 @@ LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 OBJS=	main.o
 
 compile: $(OBJS)
-	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm
+	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm -lpthread
 	rm -f *.o
 	
 main.o: src/main.c

@@ -23,6 +23,7 @@ LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 OBJS=	main.o
 
 compile: $(OBJS)
+	cd ShortcutFiles && make -f makefile
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm
 	rm -f *.o
 	
@@ -39,10 +40,6 @@ bg:
 	g++ -std=c++11 -o traffic.exe cpp/easywsclient.cpp cpp/jsoncpp.cpp cpp/traffic.cpp cpp/main.cpp
 	chmod 777 GPS.pl
 	gcc Source/RunSSUI.c -o RunSSUI.exe
-	gcc Source/ShortCutDemo.c -o SmartSealzDemo
-	gcc Source/ShortCut.c -o SmartSealz
-	mv SmartSealz /home/pi/Desktop
-	mv SmartSealzDemo /home/pi/Desktop
 	rm -f *.o
 clean:
 	rm -f *.o $(TARGET) 

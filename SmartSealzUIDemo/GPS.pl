@@ -31,6 +31,6 @@ my $AHRSGyroHeading = $1, $source1 = $';
 $source1 =~ /"AHRSMagHeading":(\-?\d*\.\d*|\-?\d*)/;
 my $AHRSMagHeading = $1, $source1 = $';
 
-open (OUTFILE, "> gpsdata.txt") or die ("cannot write to designated file");
+open (OUTFILE, "> DataFiles/gpsdata.txt") or die ("cannot write to designated file");
 printf OUTFILE ("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f", $GPSLat, $GPSLong, $GPSTrueCourse, $GPSGroundSpeed, $BaroPressureAltitude, $AHRSPitch, $AHRSRoll, $AHRSGyroHeading, $AHRSMagHeading);
 close OUTFILE;

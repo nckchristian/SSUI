@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <math.h>
+#include <pthread.h>
 #define PI 3.14159265359
 /******************************************************************************/
 /**************************** Variables ***************************************/
@@ -883,7 +884,27 @@ static gboolean _update(){
 }
 
 /*************************************************************************************************************/
-/*****************************************  GTK Button Commands ***********************************************/
+/*****************************************  Thread Commands **************************************************/
+void *upTPO(void *vargp){
+	printf("Inside TPO Thread");
+	system("./TPO.exe &");
+	return NULL;
+}
+
+void *upTraffic(void *vargp){
+	printf("Inside Traffic Thread");
+	system("./traffic.exe &");
+	return NULL;
+}
+
+void *upNav(void *vargp){
+	printf("Inside Nav Thread");
+	system("python3 heartBeats.py &");
+	return NULL;
+}
+
+/*************************************************************************************************************/
+/*****************************************  GTK Button Commands **********************************************/
 
 void on_btnStart_clicked(){
 	if(!start_timer)
@@ -891,6 +912,10 @@ void on_btnStart_clicked(){
     	//Start the timer
         g_timeout_add(240,_update, NULL);//Timer for navigation data
         g_timeout_add(1520,_updateGPS,NULL);//Timer for stratux GPS updates
+	pthread_t tid;
+	pthread_create(&tid,NULL,upTPO,NULL);
+	pthread_create(&tid,NULL,upTraffic,NULL);
+	pthread_create(&tid,NULL,upNav,NULL);
         start_timer = TRUE;
         continue_timer = TRUE;
     }
