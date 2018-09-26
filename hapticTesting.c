@@ -381,6 +381,11 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 }
 
 int main(int argc, char* argv){
-    haptic(argv[1],argv[2],argv[3],argv[4]);
+    haptic(9,0,0,0);
+	int i;
+	for(i=0;i<4;i++){
+		haptic(argv[1],argc[2],0,0);
+		sleep(2);
+	}
     return 0;
 }
