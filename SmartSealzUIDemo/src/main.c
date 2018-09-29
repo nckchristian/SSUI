@@ -747,24 +747,24 @@ static gboolean _update(){
     		if(holdAlt-inAlt > HighSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdAlt-inAlt < (-1 * HighSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     	else{
     		if(holdAlt-inAlt >LowSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdAlt-inAlt < (-1 * LowSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     }
@@ -773,24 +773,24 @@ static gboolean _update(){
     		if(holdPitch-inPitch>HighSensePitchEB){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				//haptic(9,0x05,0,0);
+				haptic(9,0x05,0,0);
     		}
     		else if(holdPitch-inPitch< (-1*HighSensePitchEB)){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				//haptic(9,0x05,0,0);
+				haptic(9,0x05,0,0);
     		}
     	}
     	else{
     		if(holdPitch-inPitch>LowSensePitchEB){
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				//haptic(9,0x05,0,0);
+				haptic(9,0x05,0,0);
     		}
     		else if(holdPitch-inPitch<(-1*LowSensePitchEB)){
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				//haptic(9,0x05,0,0);
+				haptic(9,0x05,0,0);
     		}
     	}
     }
@@ -799,24 +799,24 @@ static gboolean _update(){
     		if(holdRoll-inRoll>HighSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdRoll-inRoll<(-1*HighSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     	else{
     		if(holdRoll-inRoll>LowSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdRoll-inRoll<(-1*LowSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     }
@@ -826,24 +826,24 @@ static gboolean _update(){
     		if(holdGS-GPSGroundSpeed >HighSenseGPSGroundS){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdGS-GPSGroundSpeed<(-1 * HighSenseGPSGroundS)){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     	else{
     		if(holdGS-GPSGroundSpeed >LowSenseGPSGroundS){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdGS-GPSGroundSpeed<(-1 * LowSenseGPSGroundS)){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     }
@@ -852,24 +852,24 @@ static gboolean _update(){
     		if(holdCourse-GPSCourse >HighSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdCourse-GPSCourse<(-1 * HighSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     	else{
     		if(holdCourse-GPSCourse >LowSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     		else if(holdCourse-GPSCourse<(-1 * LowSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			//haptic(9,0x05,0,0);
+    			haptic(9,0x05,0,0);
     		}
     	}
     }
