@@ -12,7 +12,6 @@
 #include <math.h>
 #include <pthread.h>
 #define PI 3.14159265359
-
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
 	// Create I2C buses
@@ -20,18 +19,18 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 	char *bus = "/dev/i2c-1";
 	if((tca = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		//printf("Failed to open the bus 1. \n");
+		//exit(1);
 	}
 	if((tcaa = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		//printf("Failed to open the bus 2. \n");
+		//exit(1);
 	}
 	if((drv = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		//printf("Failed to open the bus 3. \n");
+		//exit(1);
 	}
 	// Get I2C devices
 	ioctl(tca, I2C_SLAVE, 0x20); //Address of TCA I2C Expander
@@ -88,7 +87,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 	}
 	else
 	{
-		printf("Invalid Motor Selection\n");
+		//printf("Invalid Motor Selection\n");
 	}
 	
 	if (wave1 == 0) //No wave forms selected - Initialization and calibration of haptic ERM motors
@@ -383,9 +382,130 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 int main(int argc, char* argv){
     haptic(9,0,0,0);
 	int i;
-	for(i=0;i<4;i++){
-		haptic(argv[1],argc[2],0,0);
-		sleep(2);
+	int CASES[15][3];
+	
+	for(i=0;i<15;i++){
+	    switch(i){
+	        case 0:
+	            //Load in Patterns Case 1
+	            break;   
+	        case 1:
+	        //Load in Patterns Case 1
+	            break;
+            case 2:
+            //Load in Patterns Case 1
+	            break; 
+	        case 3:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 4:
+	        //Load in Patterns Case 1
+	            break; 
+	        case 5:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 6:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 7:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 8:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 9:
+	        //Load in Patterns Case 1
+	            break; 
+	        case 10:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 11:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 12:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 13:
+	        //Load in Patterns Case 1
+	            break;     
+	        case 14:
+	        //Load in Patterns Case 1
+	            break;            
+	    }
 	}
+    int j,k,Motor;
+    char choice = NULL;
+    for(i=0;i<15;i++){
+        switch(i){
+            case 0:
+            //Chose Pattern Motors 1
+                break;    
+            case 1:
+            //Chose Pattern Motors 1
+                break;
+            case 2:
+            //Chose Pattern Motors 1
+                break; 
+            case 3:
+            //Chose Pattern Motors 1
+                break;     
+            case 4:
+            //Chose Pattern Motors 1
+                break; 
+            case 5:
+            //Chose Pattern Motors 1
+                break;     
+            case 6:
+            //Chose Pattern Motors 1
+                break;     
+            case 7:
+            //Chose Pattern Motors 1
+                break;     
+            case 8:
+            //Chose Pattern Motors 1
+                break;     
+            case 9:
+            //Chose Pattern Motors 1
+                break; 
+            case 10:
+            //Chose Pattern Motors 1
+                break;     
+            case 11:
+            //Chose Pattern Motors 1
+                break;     
+            case 12:
+            //Chose Pattern Motors 1
+                break;     
+            case 13:
+            //Chose Pattern Motors 1
+                break;     
+            case 14:
+            //Chose Pattern Motors 1
+                break;
+        }
+        sleep(10);
+        system("clear");
+        printf("START CASE %d\n",(i+1));
+        for(j=0;j<3;j++){
+            switch(j){
+                case 0:
+                    choice = 'A';
+                    break;
+                case 1:
+                    choice = 'B';
+                    break;
+                case 2:
+                    choice = 'C';
+            }
+            printf("CHOICE %c %d\n",choice,(j+1));
+            for(k=0;k<4;k++){
+                haptic(Motor,CASES[i][j],0,0);
+                sleep(1);
+            }
+            sleep(5);
+            //printf("END CHOICE A %d\n",i);
+        }
+        printf("END CASE %d\n",(i+1));
+    }
     return 0;
 }
