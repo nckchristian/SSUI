@@ -380,8 +380,10 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 }
 
 int main(int argc, char* argv){
-    haptic(9,0,0,0);
+    haptic(0,0,0,0);
 	int i;
+	char *func;
+	fgets(func,5,stdin);
 	int CASES[15][3];
 	
 	for(i=0;i<15;i++){
