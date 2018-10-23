@@ -1,5 +1,3 @@
-//#include <gtk/gtk.h>
-//#include <glib.h>
 #include  <stdio.h>
 #include  <math.h>
 #include <stdio.h>
@@ -383,130 +381,11 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 int main(int argc, char* argv[]){
     haptic(0,0,0,0);
 	int i;
-	int CASES[15][3];
-	
-	for(i=0;i<15;i++){
-	    switch(i){
-	        case 0:
-	            //Load in Patterns Case 1
-	            break;   
-	        case 1:
-	        //Load in Patterns Case 1
-	            break;
-            case 2:
-            //Load in Patterns Case 1
-	            break; 
-	        case 3:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 4:
-	        //Load in Patterns Case 1
-	            break; 
-	        case 5:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 6:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 7:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 8:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 9:
-	        //Load in Patterns Case 1
-	            break; 
-	        case 10:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 11:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 12:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 13:
-	        //Load in Patterns Case 1
-	            break;     
-	        case 14:
-	        //Load in Patterns Case 1
-	            break;            
-	    }
+	sleep(5);
+	//printf("%s\n",argv[1]);
+	for(i=0;i<4;i++){
+    	haptic(9,atoi(argv[1]),0,0);
+    	sleep(1);
 	}
-    int j,k,Motor;
-    char choice = NULL;
-    for(i=0;i<15;i++){
-        switch(i){
-            case 0:
-            //Chose Pattern Motors 1
-                break;    
-            case 1:
-            //Chose Pattern Motors 1
-                break;
-            case 2:
-            //Chose Pattern Motors 1
-                break; 
-            case 3:
-            //Chose Pattern Motors 1
-                break;     
-            case 4:
-            //Chose Pattern Motors 1
-                break; 
-            case 5:
-            //Chose Pattern Motors 1
-                break;     
-            case 6:
-            //Chose Pattern Motors 1
-                break;     
-            case 7:
-            //Chose Pattern Motors 1
-                break;     
-            case 8:
-            //Chose Pattern Motors 1
-                break;     
-            case 9:
-            //Chose Pattern Motors 1
-                break; 
-            case 10:
-            //Chose Pattern Motors 1
-                break;     
-            case 11:
-            //Chose Pattern Motors 1
-                break;     
-            case 12:
-            //Chose Pattern Motors 1
-                break;     
-            case 13:
-            //Chose Pattern Motors 1
-                break;     
-            case 14:
-            //Chose Pattern Motors 1
-                break;
-        }
-        sleep(10);
-        system("clear");
-        printf("START CASE %d\n",(i+1));
-        for(j=0;j<3;j++){
-            switch(j){
-                case 0:
-                    choice = 'A';
-                    break;
-                case 1:
-                    choice = 'B';
-                    break;
-                case 2:
-                    choice = 'C';
-            }
-            printf("CHOICE %c %d\n",choice,(j+1));
-            for(k=0;k<4;k++){
-                haptic(Motor,CASES[i][j],0,0);
-                sleep(1);
-            }
-            sleep(5);
-            //printf("END CHOICE A %d\n",i);
-        }
-        printf("END CASE %d\n",(i+1));
-    }
     return 0;
 }
