@@ -380,12 +380,15 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 
 int main(int argc, char* argv[]){
     haptic(0,0,0,0);
+    printf("Initialize\n");
 	int i;
 	sleep(5);
 	//printf("%s\n",argv[1]);
+	printf("Starting Pattern\n");
 	for(i=0;i<4;i++){
-    	haptic(9,atoi(argv[1]),0,0);
+    	haptic(atoi(argv[1]),atoi(argv[2]),0,0);
     	sleep(1);
 	}
+	printf("End Pattern\n");
     return 0;
 }
