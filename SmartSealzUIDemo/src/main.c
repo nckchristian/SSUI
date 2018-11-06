@@ -987,13 +987,12 @@ void on_btnSet_clicked()
 	strcpy(curr,"Current Setting: ");
 	strcat(curr, destAltim);
 	gtk_label_set_label(lblCurr,curr);
-	if(!Callibrated){
-    	pid = 0;
-	    pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
-	    pthread_join(tid[4],NULL);
-	    Callibrated=true;
-	}
-	gtk_widget_set_sensitive(((GtkWidget*) btnStart),true);
+	pid = 0;
+	if(!initialized){
+	    gtk_widget_set_sensitive(((GtkWidget*) btnStart),true);
+    	haptic(0,0,0,0);
+    	initialized=true;
+	}	
 }	
 void on_tbActiveTraffic_clicked(){
 	//Change traffic toggle buttons either to enabled or disabled depending on tbTraffic state
