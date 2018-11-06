@@ -976,7 +976,7 @@ void on_btnEnd_clicked(){
 	continue_timer = FALSE;
     start_timer = FALSE;
 }
-
+bool initialized = false;
 void on_btnSet_clicked()
 {
     //XInitThreads();
