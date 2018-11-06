@@ -1,6 +1,12 @@
+#
+#    All contents of this file were written by Brandon Mord 
+#    bdrmord001@gmail.com
+# 
+#    Original owner of git code Bmord01
+#
 # change application name here (executable output name)
 TARGET=Shortcut
- 
+
 # compiler
 CC=gcc
 # debug

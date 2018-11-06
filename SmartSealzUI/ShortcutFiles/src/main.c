@@ -1,3 +1,9 @@
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdio.h>
@@ -6,11 +12,11 @@
 GtkButton *btnRunProgram, *btnRunProgramDemo, *btnUpdateProgram, *btnCheckConnections;
 
 void on_runProgram(){
-	system("cd SB/master/SSUI/SmartSealzUI && ./RunSSUI.exe &");
+	system("cd SB/master/SSUI/SmartSealzUI && ./SSUI &");
 }
 
 void on_runProgramDemo(){
-	system("cd SB/master/SSUI/SmartSealzUIDemo && ./RunSSUI.exe &");
+	system("cd SB/master/SSUI/SmartSealzUI && ./SSUI &");
 }
 
 void on_updateProgram(){
@@ -54,9 +60,17 @@ int main(int argc, char *argv[])
     
     return 0;
 }
- 
-// called when window is closed
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 void on_window_main_destroy()
 {
+    system("exit");
     gtk_main_quit();
 }
+/*
+    All contents of this file were written by Brandon Mord 
+*/

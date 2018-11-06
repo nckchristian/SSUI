@@ -11,7 +11,12 @@
     2       = Make the UI itself with any UI changes
     default = Clean the folder up
 */
-
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

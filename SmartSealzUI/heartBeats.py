@@ -4,6 +4,7 @@
 # Raspberry pi and WorldFamousElectronics's code for PulseSensor_Amped_Arduino
 #
 # Cahlor D Stedman
+# Edited and Maintained by Brandon Mord
 # Version 1.1
 # BPM Program
 # SmartSealz
@@ -13,14 +14,32 @@
 
 import time
 import sys
+import threading
+import os
+
+threadFile = open("DataFiles/pythonThread.txt","w")
+threadFile.write(str(os.getpid()))
+threadFile.close()
 # Import the ADS1x15 module.
 # sudo pip install adafruit-ads1x15
-import Adafruit_ADS1x15
-
+init = False;
+try:
+    import Adafruit_ADS1x15
+except:
+    print("Heart Rate Monitor Package Error Error Occured")
+    lgs = open("LoggingFile.txt","a")
+    lgs.write("Error in heartBeats.py\n")
 while True:
     try:
         if __name__ == '__main__':
-
+            if(init==False):
+                try:
+                    import Adafruit_ADS1x15
+                    init=True;
+                except:
+                    print("Heart Rate Initiation Error Error Occured")
+                    lgs = open("LoggingFile.txt","a")
+                    lgs.write("Error in heartBeats.py\n")
             adc = Adafruit_ADS1x15.ADS1015()
             # initialization 
             GAIN = 2/3  
@@ -124,5 +143,5 @@ while True:
         print("Heart Rate Monitor Reading Error Occured")
         lgs = open("LoggingFile.txt","a")
         lgs.write("Error in heartBeats.py\n")
-        time.sleep(10)
+        time.sleep(5)
         

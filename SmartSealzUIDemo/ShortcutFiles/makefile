@@ -1,6 +1,12 @@
+#
+#    All contents of this file were written by Brandon Mord 
+#    bdrmord001@gmail.com
+# 
+#    Original owner of git code Bmord01
+#
 # change application name here (executable output name)
 TARGET=Shortcut
- 
+
 # compiler
 CC=gcc
 # debug
@@ -24,7 +30,7 @@ OBJS=	main.o
  
 all: $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
-	mv Shortcut /home/pi/Desktop/SB/Shortcut/SSUI
+	mv Shortcut /home/pi/Desktop
 	rm -f *.o
     
 main.o: src/main.c

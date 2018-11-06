@@ -1,3 +1,9 @@
+#
+#    All contents of this file were written by Brandon Mord 
+#    bdrmord001@gmail.com
+#    
+#    Original owner of git code Bmord01
+#
 # change application name here (executable output name)
 TARGET=SSUI
 
@@ -24,7 +30,8 @@ OBJS=	main.o
 
 compile: $(OBJS)
 	cd ShortcutFiles && make -f makefile
-	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm
+	pwd > Env.txt
+	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm -lpthread -lX11
 	rm -f *.o
 	
 main.o: src/main.c
@@ -37,9 +44,8 @@ bg:
 	gcc -g Source/main.c -o Nav.exe -lwiringPi -lm
 	chmod 777 heartBeats.py
 	gcc -g Source/PerlOut.c -o TPO.exe
-	g++ -std=c++11 -o traffic.exe cpp/easywsclient.cpp cpp/jsoncpp.cpp cpp/traffic.cpp cpp/main.cpp
+	g++ -std=c++11 -o traffic.exe cpp/*.cpp -pthread -lX11 
 	chmod 777 GPS.pl
-	gcc Source/RunSSUI.c -o RunSSUI.exe
 	rm -f *.o
 clean:
 	rm -f *.o $(TARGET) 

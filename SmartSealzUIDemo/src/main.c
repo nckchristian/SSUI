@@ -1,80 +1,248 @@
-#include <gtk/gtk.h>
-#include <glib.h>
-#include  <stdio.h>
-#include  <math.h>
-#include <stdio.h>
-#include  <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <math.h>
-#include <pthread.h>
-#define PI 3.14159265359
-/******************************************************************************/
-/**************************** Variables ***************************************/
-//Full Version Variables
-//float HighSensePressureEB=50.0,HighSensePitchEB=15.0,HighSenseRollEB=20.0,HighSenseAltitudeEB=50.0, HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=50.0;
-//float LowSensePressureEB=150.0,LowSensePitchEB=15.0,LowSenseRollEB=55.0,LowSenseAltitudeEB=150.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=150.0;
+#include "globalIncludes.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
-//Demo Variables:
-float HighSensePressureEB=5.0,HighSensePitchEB=10.0,HighSenseRollEB=10.0,HighSenseAltitudeEB=2.0,HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=2.0;
-float LowSensePressureEB=10.0,LowSensePitchEB=30.0,LowSenseRollEB=30.0,LowSenseAltitudeEB=4.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=5.0;
+FILE *inGPS, *inFile, *inADSB, *inHR;
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 
-static gboolean continue_timer = FALSE;
-static gboolean start_timer=FALSE;
-//static int times_cycled = 0;
+pthread_t fileTID[4];
 
-double GPSLat, GPSLong, GPSCourse, GPSGroundSpeed, ADSBPressure, ADSBPitch, ADSBRoll, ADSBGyroHeading, ADSBMagHeading;
-double holdCourse,holdGS;
-double Range=0.0;
+void *readGPS(void * arg){
+    inGPS = fopen("DataFiles/gpsdata.txt","r");
+    fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
+    
+    sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
+    sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
+    
+    gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
+    gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
+    fclose(inGPS);
+    return (NULL);
+}
 
-int testc=0;
-int prevTrafficC;
-int zeroCount=0;
-int altim;
-int inAlt,inPitch,inRoll,HR,prevHR=0;
-int holdAlt,holdPitch,holdRoll;
+void *readFile(void * arg){
+    inFile = fopen("DataFiles/Nav.txt","r");//Navigation data file
+    if(!inFile){
+    	printf("HERE NAV\n");
+    }
+    fscanf(inFile,"%d %f %d %d",&inAlt,&inPres,&inPitch,&inRoll);//Read in Navigation Data
+    return (NULL);
+}
 
-bool Started = FALSE;
-bool oneS, fiveS,tenS;
-bool activeS;
-bool bAlt=false,bPitch=false,bRoll=false,bGS=false,bMagHead=false,bGPST=false;
-bool bAltA=false,bPitchA=false,bRollA=false,bGSA=false,bMagHeadA=false,bGPSTA=false;
-bool bAltC=false,bPitchC=false,bRollC=false,bGSC=false,bMagHeadC=false,bGPSTC=false;
-bool display = false;
+void *readADSB(void * arg){
+    inADSB = fopen("DataFiles/traffic.txt","r");//Traffic alert file written by main.cpp running in background
+    if(!inADSB){
+    	printf("HERE ADSB\n");
+    }
+	int count = 0;
+	char *line;
+	size_t len=0;
+	ssize_t read;
+	while((read = getline(&line,&len,inADSB))!=-1){
+		count++; //count lines in traffic file
+	}
+    fclose(inADSB);
+    
+    inADSB = fopen("DataFiles/traffic.txt","r");
+	char tail[20];
+	double lat=0.0,lon=0.0;
+	int altADSB=0,track=0,speed=0;
+	int lineCount=0;
+	char storeT[50];
+	char *token;
+	int Loops = 0;
+    while(lineCount!=count){
+    	//loop through each piece of traffic in the traffic text file
+		token = strtok(fgets(storeT,50,inADSB)," ");
+		while(token !=NULL){
+			//Seperate infromation into fields for later use
+			switch (Loops){
+				case 0:
+					strcpy(tail,token);
+					if(strlen(tail)==0){
+						skip=true;
+						printf("SKIP\n");
+						break;
+					}
+					break;
+				case 1:
+					lat=atof(token);
+					break;
+				case 2:
+					lon=atof(token);
+					break;
+				case 3:
+					altADSB=atoi(token);
+					break;
+				case 4:
+					track=atoi(token);
+					break;
+				case 5:
+					speed=atoi(token);
+					break;
+			}
+			if(skip){
+				printf("SKIP\n");
+				continue;
+			}
+			token = strtok(NULL," ");
+			Loops++;
+		}
+		Loops=0;
+		lineCount++;
+		if(GPSLat>0 && skip==false){
+			//Do distance equation and add traffic to counter if traffic within range
+			dist = CalcDist(lat,lon);
+			if(tenS){
+				if(Range>dist){
+					TrafficCount++;
+				}
+			}
+			else if(fiveS){
+				if(Range>dist){
+					TrafficCount++;
+				}
+			}
+			else if(oneS){
+				if(Range>dist){
+					TrafficCount++;
+				}
+			}
+			else{
+				
+			}
+			if(TrafficCount!=0){
+				prevTrafficC=TrafficCount;
+				//printf("SET PREV %d\n",prevTrafficC);
+			}
+		}
+		else{
+			TrafficCount=prevTrafficC;
+		}
+    }
+    lineCount=0;
+    fclose(inADSB);
+    return (NULL);
+}
 
-float inPres;
-float holdPres;
+void *readHR(void * arg){
+    inHR = fopen("DataFiles/heartrate.txt","r");//Heart Rate text file being written by heartrate.py in background
+    if(!inHR){
+    	printf("HERE HR");
+    }
+    fscanf(inHR,"%d",&HR);
+    if(prevHR==0 || HR!=0){
+    	prevHR=HR;
+    }
+    if(HR==0){
+    	HR=prevHR;
+    }
+    fclose(inHR);
+    return (NULL);
+}
 
-char destAlt[10],destHoldAlt[10];
-char destPres[10],destHoldPres[10];
-char destPitch[10],destHoldPitch[10];
-char destRoll[10],destHoldRoll[10];
-char destGroundS[10],destHoldGroundS[10];
-char destCourse[10],destHoldCourse[10];
-char destHR[5];
-char destAltim[10];
-char destTraffic[30];
+pthread_t toggleTID;
 
-/*************************************************************************************************************/
-/****************************************GTK Pointer Definition **********************************************/
-GtkButton *btnStart,*btnEnd,*btnSet,*btnCalHap;
-
-GtkLabel *lblAltitude,*lblPitch,*lblRoll, *lblGS, *lblGPST,*lblHR, *lblCurr,*lblTraffic,*warning;
-
-GtkSwitch *Sense1,*Sense2,*Sense3,*Sense4,*Sense5,*Sense6;
-
-GtkToggleButton *tbAlt,*tbPitch,*tbRoll,*tbGS,*tbGPST,*tbHR,*tbActiveTraffic, *tbOneM, *tbFiveM, *tbTenM;
-
-GtkSpinButton *spAltim;
-/*****************************************************************************/
-
-/**************************************************************************************************************
-							Haptic Fucntion
-							Runs Motors in Headset
-**************************************************************************************************************/
+void *checkToggles(void* arg){
+    // ================================================================
+	// ===                Check for any changes in toggle states    ===
+	// ================================================================
+    if(bAltA && !bAlt){
+    	bAlt=true;
+    	bAltC=true;
+    }
+    else if(!bAltA && bAlt){
+    	bAlt=false;
+    	bAltC=true;
+    }
+    if(bPitchA && !bPitch){
+    	bPitch=true;
+    	bPitchC=true;
+    }
+    else if(!bPitchA && bPitch){
+    	bPitch=false;
+    	bPitchC=true;
+    }
+    if(bRollA && !bRoll){
+    	bRoll=true;
+    	bRollC=true;
+    }
+    else if(!bRollA && bRoll){
+    	bRoll=false;
+    	bRollC=true;
+    }
+    if(bGSA && !bGS){
+    	bGS=true;
+    	bGSC=true;
+    }
+    else if(!bGSA && bGS){
+    	bGS=false;
+    	bGSC=true;
+    }
+    if(bGPSTA && !bGPST){
+    	bGPST=true;
+    	bGPSTC=true;
+    }
+    else if(!bGPSTA && bGPST){
+    	bGPST=false;
+    	bGPSTC=true;
+    }
+    // ================================================================
+	// ===            Set Holding Value if toggle state changes     ===
+	// ================================================================
+    if(bAltC){
+    	if(bAlt){
+    		holdAlt=inAlt;
+    	}
+    	else{
+    		holdAlt=-1;
+    	}
+    }
+    if(bPitchC){
+    	if(bPitch){
+    		holdPitch=inPitch;
+    	}
+    	else{
+    		holdPitch=-1;
+    	}
+    }
+    if(bRollC){
+    	if(bRoll){
+    		holdRoll=inRoll;
+    	}
+    	else{
+    		holdRoll=-1;
+    	}
+    }
+    if(bGSC){
+    	if(bGS){
+    		holdGS=GPSGroundSpeed;	
+    	}
+    	else{
+    		holdGS=-1;
+    	}
+    }
+    if(bGPSTC){
+    	if(bGPST){
+    		holdCourse = GPSCourse;
+    	}
+    	else{
+    		holdCourse=-1;
+    	}
+    }
+    //reset toggle button changed to false
+    bAltC=false;
+    bPitchC=false;
+    bRollC=false;
+    bMagHeadC=false;
+    bGSC=false;
+    bGPSTC=false;
+}
 
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
@@ -83,18 +251,15 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 	char *bus = "/dev/i2c-1";
 	if((tca = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		printf("Failed to open the bus 1. \n");
 	}
 	if((tcaa = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		printf("Failed to open the bus 2. \n");
 	}
 	if((drv = open(bus, O_RDWR)) < 0)
 	{
-		printf("Failed to open the bus. \n");
-		exit(1);
+		printf("Failed to open the bus 3. \n");
 	}
 	// Get I2C devices
 	ioctl(tca, I2C_SLAVE, 0x20); //Address of TCA I2C Expander
@@ -206,7 +371,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 			if(read(drv, data, 1) != 1)
 			{
 				printf("Error : Input/Output error \n");
-				exit(1);
+				return;
 			}
 		}
 	
@@ -259,7 +424,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 			if(read(drv, data, 1) != 1)
 			{
 				printf("Error : Input/Output error \n");
-				exit(1);
+				return;
 			}
 		}
 	
@@ -310,7 +475,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 			if(read(drv, data, 1) != 1)
 			{
 				printf("Error : Input/Output error \n");
-				exit(1);
+				return;
 			}
 		}
 	
@@ -366,7 +531,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 			if(read(drv, data, 1) != 1)
 			{
 				printf("Error : Input/Output error \n");
-				exit(1);
+				return;
 			}
 		}
 	
@@ -427,7 +592,7 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 			if(read(drv, data, 1) != 1)
 			{
 				printf("Error : Input/Output error \n");
-				exit(1);
+				return;
 			}
 		}
 	
@@ -450,17 +615,16 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 
 //Update gps by running GPS.pl script while connected to stratux wifi
 static gboolean _updateGPS(){
-	FILE *inGPS = fopen("DataFiles/gpsdata.txt","r");
-    fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
-    
-    sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
-    sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
-    
-    gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
-    gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
-    fclose(inGPS);
+	pthread_create(&fileTID[0],NULL,readGPS,NULL);
+	pthread_join(fileTID[0],NULL);
     return continue_timer;
 }
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 // ================================================================
 // ===					Change Degrees to Radians				===
 // ================================================================
@@ -483,128 +647,19 @@ double CalcDist(double inLat,double inLong){
 	return d;
 }
 
-double dist=0.0;
-
 //Update the navigation data and read in traffic alerts from stratux
 static gboolean _update(){
-	
-    char cmd1[50];
+	char cmd1[50];
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
     system(cmd1);
-    FILE *inFile = fopen("DataFiles/Nav.txt","r");//Navigation data file
-    if(!inFile){
-    	printf("HERE NAV\n");
+    pthread_create(&fileTID[1],NULL,readFile,NULL);
+    pthread_create(&fileTID[2],NULL,readADSB,NULL);
+    pthread_create(&fileTID[3],NULL,readHR,NULL);
+    int threadJoins;
+    for(threadJoins=1;threadJoins<4;threadJoins++){
+        pthread_join(fileTID[threadJoins],NULL);
     }
-    FILE *inADSB = fopen("DataFiles/traffic.txt","r");//Traffic alert file written by main.cpp running in background
-    if(!inADSB){
-    	printf("HERE ADSB\n");
-    }
-    FILE *inHR = fopen("DataFiles/heartrate.txt","r");//Heart Rate text file being written by heartrate.py in background
-    if(!inHR){
-    	printf("HERE HR");
-    }
-    fscanf(inHR,"%d",&HR);
-    if(prevHR==0 || HR!=0){
-    	prevHR=HR;
-    }
-    if(HR==0){
-    	HR=prevHR;
-    }
-    fclose(inHR);
-    
-    
-    int TrafficCount=0;
-	int count = 0;
-	char *line;
-	size_t len=0;
-	ssize_t read;
-	while((read = getline(&line,&len,inADSB))!=-1){
-		count++; //count lines in traffic file
-	}
-    fclose(inADSB);
-    
-    inADSB = fopen("DataFiles/traffic.txt","r");
-	char tail[20];
-	double lat=0.0,lon=0.0;
-	int altADSB=0,track=0,speed=0;
-	int lineCount=0;
-	char storeT[50];
-	char *token;
-	int Loops = 0;
-	bool skip=false;
-    while(lineCount!=count){
-    	//loop through each piece of traffic in the traffic text file
-		token = strtok(fgets(storeT,50,inADSB)," ");
-		while(token !=NULL){
-			//Seperate infromation into fields for later use
-			switch (Loops){
-				case 0:
-					strcpy(tail,token);
-					if(strlen(tail)==0){
-						skip=true;
-						printf("SKIP\n");
-						break;
-					}
-					break;
-				case 1:
-					lat=atof(token);
-					break;
-				case 2:
-					lon=atof(token);
-					break;
-				case 3:
-					altADSB=atoi(token);
-					break;
-				case 4:
-					track=atoi(token);
-					break;
-				case 5:
-					speed=atoi(token);
-					break;
-			}
-			if(skip){
-				printf("SKIP\n");
-				continue;
-			}
-			token = strtok(NULL," ");
-			Loops++;
-		}
-		Loops=0;
-		lineCount++;
-		if(GPSLat>0 && skip==false){
-			//Do distance equation and add traffic to counter if traffic within range
-			dist = CalcDist(lat,lon);
-			if(tenS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else if(fiveS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else if(oneS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else{
-				
-			}
-			if(TrafficCount!=0){
-				prevTrafficC=TrafficCount;
-				//printf("SET PREV %d\n",prevTrafficC);
-			}
-		}
-		else{
-			TrafficCount=prevTrafficC;
-		}
-    }
-    lineCount=0;
-    
-    fscanf(inFile,"%d %f %d %d",&inAlt,&inPres,&inPitch,&inRoll);//Read in Navigation Data
     
     //Get all states of toggle buttons for holding calculations
     bAltA=gtk_toggle_button_get_active((GtkToggleButton*) tbAlt);
@@ -612,99 +667,8 @@ static gboolean _update(){
     bRollA=gtk_toggle_button_get_active((GtkToggleButton*) tbRoll);
     bGSA=gtk_toggle_button_get_active((GtkToggleButton*) tbGS);
     bGPSTA=gtk_toggle_button_get_active((GtkToggleButton*) tbGPST);
-    // ================================================================
-	// ===                Check for any changes in toggle states    ===
-	// ================================================================
-    if(bAltA && !bAlt){
-    	bAlt=true;
-    	bAltC=true;
-    }
-    else if(!bAltA && bAlt){
-    	bAlt=false;
-    	bAltC=true;
-    }
-    if(bPitchA && !bPitch){
-    	bPitch=true;
-    	bPitchC=true;
-    }
-    else if(!bPitchA && bPitch){
-    	bPitch=false;
-    	bPitchC=true;
-    }
-    if(bRollA && !bRoll){
-    	bRoll=true;
-    	bRollC=true;
-    }
-    else if(!bRollA && bRoll){
-    	bRoll=false;
-    	bRollC=true;
-    }
-    if(bGSA && !bGS){
-    	bGS=true;
-    	bGSC=true;
-    }
-    else if(!bGSA && bGS){
-    	bGS=false;
-    	bGSC=true;
-    }
-    if(bGPSTA && !bGPST){
-    	bGPST=true;
-    	bGPSTC=true;
-    }
-    else if(!bGPSTA && bGPST){
-    	bGPST=false;
-    	bGPSTC=true;
-    }
-    // ================================================================
-	// ===            Set Holding Value if toggle state changes     ===
-	// ================================================================
-    if(bAltC){
-    	if(bAlt){
-    		holdAlt=inAlt;
-    	}
-    	else{
-    		holdAlt=-1;
-    	}
-    }
-    if(bPitchC){
-    	if(bPitch){
-    		holdPitch=inPitch;
-    	}
-    	else{
-    		holdPitch=-1;
-    	}
-    }
-    if(bRollC){
-    	if(bRoll){
-    		holdRoll=inRoll;
-    	}
-    	else{
-    		holdRoll=-1;
-    	}
-    }
-    if(bGSC){
-    	if(bGS){
-    		holdGS=GPSGroundSpeed;	
-    	}
-    	else{
-    		holdGS=-1;
-    	}
-    }
-    if(bGPSTC){
-    	if(bGPST){
-    		holdCourse = GPSCourse;
-    	}
-    	else{
-    		holdCourse=-1;
-    	}
-    }
-    //reset toggle button changed to false
-    bAltC=false;
-    bPitchC=false;
-    bRollC=false;
-    bMagHeadC=false;
-    bGSC=false;
-    bGPSTC=false;
+    
+    pthread_create(&toggleTID,NULL,checkToggles,NULL);
     
     //Prepare all strings to be printed in gtk labels
     sprintf(destAlt,"%d",inAlt);
@@ -738,162 +702,268 @@ static gboolean _update(){
     gtk_label_set_label((GtkLabel *) lblHR,destHR);
     //close files
     fclose(inFile);    
-    fclose(inADSB);
-    
+    pthread_join(toggleTID,NULL);
     //Print warnings if values outside holding value
     //Send warnings to haptic motors if form described in haptic funciton
     if(bAltA){
-    	if(gtk_switch_get_active(Sense1)){
+		//Above Target Alt
+    	if(gtk_switch_get_active(Sense1)){ 
     		if(holdAlt-inAlt > HighSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid = 1;
     		}
+			//Below Target Alt
     		else if(holdAlt-inAlt < (-1 * HighSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid = 2;
     		}
     	}
     	else{
+			//Above Target Alt
     		if(holdAlt-inAlt >LowSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid = 1;
     		}
+			//Below Target Alt
     		else if(holdAlt-inAlt < (-1 * LowSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=2;
     		}
     	}
     }
     if(bPitchA){
     	if(gtk_switch_get_active(Sense2)){
+			//Above Target Pitch
     		if(holdPitch-inPitch>HighSensePitchEB){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				haptic(9,0x05,0,0);
+				pid=3;
     		}
+			//Below Target Pitch
     		else if(holdPitch-inPitch< (-1*HighSensePitchEB)){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				haptic(9,0x05,0,0);
+				pid=4;
     		}
     	}
     	else{
     		if(holdPitch-inPitch>LowSensePitchEB){
+				//Above Target Pitch
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				haptic(9,0x05,0,0);
+				pid=3;
     		}
     		else if(holdPitch-inPitch<(-1*LowSensePitchEB)){
+				//Below Target Pitch
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				haptic(9,0x05,0,0);
+				pid=4;
     		}
     	}
     }
     if(bRollA){
     	if(gtk_switch_get_active(Sense3)){
+			//Above Target Roll
     		if(holdRoll-inRoll>HighSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=5;
     		}
+			//Below Target Roll
     		else if(holdRoll-inRoll<(-1*HighSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=6;
     		}
     	}
     	else{
+			//Above Target Roll
     		if(holdRoll-inRoll>LowSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=5;
     		}
+			//Below Target Roll
     		else if(holdRoll-inRoll<(-1*LowSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=6;
     		}
     	}
     }
     
     if(bGSA){
     	if(gtk_switch_get_active(Sense4)){
+			//Above Target Ground Speed
     		if(holdGS-GPSGroundSpeed >HighSenseGPSGroundS){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
     		}
     		else if(holdGS-GPSGroundSpeed<(-1 * HighSenseGPSGroundS)){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
     		}
     	}
     	else{
+			//Above Target Ground Speed
     		if(holdGS-GPSGroundSpeed >LowSenseGPSGroundS){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
     		}
     		else if(holdGS-GPSGroundSpeed<(-1 * LowSenseGPSGroundS)){
     			gtk_label_set_label(warning,"GROUND SPEED WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
     		}
     	}
+		pid=7;
     }
     if(bGPSTA){
     	if(gtk_switch_get_active(Sense5)){
+			//Above Target Course
     		if(holdCourse-GPSCourse >HighSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=8;
     		}
     		else if(holdCourse-GPSCourse<(-1 * HighSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=9;
     		}
     	}
     	else{
+			//Above Target Course
     		if(holdCourse-GPSCourse >LowSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=8;
     		}
     		else if(holdCourse-GPSCourse<(-1 * LowSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			haptic(9,0x05,0,0);
+    			pid=9;
     		}
     	}
-    }
+		
+	}
     //if there is no warning change warning label to nothing
     if(!display){
     	gtk_label_set_label(warning,"...");
+		pid=-1;
     }
+	
+	if(!threadRunning){
+		threadRunning=true;
+		pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+		printf("\nHaptic Thread Run\n");
+	}
+	
     display=false;
     TrafficCount=0;
     skip=false;
     return continue_timer;
 }
-
-/*************************************************************************************************************/
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 /*****************************************  Thread Commands **************************************************/
-/*************************************************************************************************************/
-/*****************************************  GTK Button Commands **********************************************/
+void *upHaptic(void *vargp){
+	int *inPat = (int*) vargp;
+	int pattern = *inPat;
+	printf("\n\npattern number: %d\n\n",pattern);
+	switch(pattern){
+		case -1:
+			break;
+		case 0:
+			haptic(0,0,0,0);
+			return NULL;
+		case 1:
+			haptic(7,16,16,16);
+			break;
+		case 2:
+			haptic(8,12,12,12);
+			break;
+		case 3:
+			haptic(7,17,0,0);
+			break;
+		case 4:
+			haptic(8,17,0,0);
+			break;
+		case 5:
+			haptic(3,17,0,0);
+			usleep(100000);
+			haptic(2,17,0,0);
+			break;
+		case 6:
+			haptic(1,17,0,0);
+			usleep(100000);
+			haptic(4,17,0,0);
+			break;
+		case 7:
+			haptic(9,17,0,0);
+			break;
+		case 8:
+			//Track on circle needs to be accounted for
+			break;
+		case 9:
+			//track on circle needs to be accounted for
+			break;
+	}
+	usleep(2000000);
+	threadRunning=false;
+	return(NULL);
+}
+void *upTraffic(void *vargp){
+	printf("Inside Traffic Thread");
+	system("./traffic.exe &");
+	return(NULL);
+}
 
+void *upHeartBeat(void *vargp){
+	printf("Inside Nav Thread");
+	system("python3 heartBeats.py &");
+	return(NULL);
+}
+
+void *upTPO(void *vargp){
+	printf("Inside TPO Thread");
+	system("./TPO.exe &");
+	return(NULL);
+}
+
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
+/*****************************************  GTK Button Commands ***********************************************/
+
+
+pid_t forkslist[2];
+pid_t pid;
+bool forkedProcesses = false;
 void on_btnStart_clicked(){
+    gtk_widget_set_sensitive(((GtkWidget*) btnEnd),true);
+    gtk_widget_set_sensitive(((GtkWidget*) btnStart),false);
 	if(!start_timer)
     {
     	//Start the timer
         g_timeout_add(240,_update, NULL);//Timer for navigation data
         g_timeout_add(1520,_updateGPS,NULL);//Timer for stratux GPS updates
+        if(!Background){
+          pthread_create(&tid[0],NULL,upTPO,((void *)tid[0]));
+	        pthread_create(&tid[1],NULL,upTraffic,((void *)tid[1]));
+	        pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
+	        Background=true;
+        }
         start_timer = TRUE;
         continue_timer = TRUE;
     }
@@ -901,12 +971,15 @@ void on_btnStart_clicked(){
 
 void on_btnEnd_clicked(){
 	//Pause Timer
+	gtk_widget_set_sensitive(((GtkWidget*) btnStart),true);
+	gtk_widget_set_sensitive(((GtkWidget*) btnEnd),false);
 	continue_timer = FALSE;
     start_timer = FALSE;
 }
 
 void on_btnSet_clicked()
 {
+    //XInitThreads();
 	//Set the altimeter data so that the navigation data is accurate to location
 	altim = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spAltim));
 	sprintf(destAltim,"%d\n",altim);
@@ -914,11 +987,13 @@ void on_btnSet_clicked()
 	strcpy(curr,"Current Setting: ");
 	strcat(curr, destAltim);
 	gtk_label_set_label(lblCurr,curr);
-}
-void on_btnHaptic_clicked(){
-	//Initialize haptic motors
-	haptic(0,0,0,0);
-	gtk_widget_hide((GtkWidget*) btnCalHap);
+	if(!Callibrated){
+    	pid = 0;
+	    pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+	    pthread_join(tid[4],NULL);
+	    Callibrated=true;
+	}
+	gtk_widget_set_sensitive(((GtkWidget*) btnStart),true);
 }	
 void on_tbActiveTraffic_clicked(){
 	//Change traffic toggle buttons either to enabled or disabled depending on tbTraffic state
@@ -971,6 +1046,7 @@ void rangeChange(){
 
 int main(int argc, char *argv[])
 {
+    XInitThreads();
     GtkBuilder      *builder; 
     GtkWidget       *window;
 	
@@ -984,7 +1060,6 @@ int main(int argc, char *argv[])
 
     
     btnStart=GTK_BUTTON(gtk_builder_get_object(builder,"btnStart"));	//Starting Reading data button assignment to pointer
-    btnCalHap=GTK_BUTTON(gtk_builder_get_object(builder,"btnHaptic"));	//Starting Reading data button assignment to pointer
     btnEnd=GTK_BUTTON(gtk_builder_get_object(builder,"btnEnd"));		//Pausing Reading data button assignment to pointer
     btnSet=GTK_BUTTON(gtk_builder_get_object(builder,"btnSet"));		//Set Altimeter number button assignment to pointer
     lblAltitude=GTK_LABEL(gtk_builder_get_object(builder,"lblVal1"));	//value of altitude label display assignment to pointer
@@ -1018,7 +1093,6 @@ int main(int argc, char *argv[])
 	g_signal_connect(btnStart,"clicked",G_CALLBACK (on_btnStart_clicked), NULL);
 	g_signal_connect(btnEnd, "clicked", G_CALLBACK (on_btnEnd_clicked),NULL);
 	g_signal_connect(btnSet, "clicked", G_CALLBACK(on_btnSet_clicked), NULL);
-	g_signal_connect(btnCalHap,"clicked",G_CALLBACK(on_btnHaptic_clicked),NULL);
 	g_signal_connect(tbActiveTraffic,"clicked",G_CALLBACK(on_tbActiveTraffic_clicked),NULL);
 	g_signal_connect(tbOneM,"clicked",G_CALLBACK(rangeChange),NULL);
 	g_signal_connect(tbFiveM,"clicked",G_CALLBACK(rangeChange),NULL);
@@ -1044,15 +1118,46 @@ int main(int argc, char *argv[])
     return 0;
 }	
 
+void *killThreads(void *args){
+    //Exit UI
+	int ADSBThread;
+	FILE *perlThread = fopen("DataFiles/perlThread.txt","r");
+	fscanf(perlThread,"%d",&ADSBThread);
+	fclose(perlThread);
+	char cmd[25];
+	sprintf(cmd,"kill %d",ADSBThread);
+	system(cmd);
+	int thread1=0,thread2=0;
+	FILE *threads = fopen("DataFiles/threads.txt","r");
+	fscanf(threads,"%d\n %d\n",&thread1,&thread2);
+	sprintf(cmd,"kill %d",thread1);
+	system(cmd);
+	sprintf(cmd,"kill %d",thread2);
+	system(cmd);
+	fclose(threads);
+	system("rm DataFiles/threads.txt");
+	system(cmd);
+	FILE *pythonT = fopen("DataFiles/pythonThread.txt","r");
+	fscanf(pythonT,"%d",&ADSBThread);
+	sprintf(cmd,"kill %d",ADSBThread);
+	system(cmd);
+	fclose(pythonT);
+	system("rm DataFiles/pythonThread.txt");
+    return NULL;
+}
+
 void on_btnClose_clicked(){
-	//Exit UI
-	system("exit");
+	pthread_t killTid;
+	pthread_create(&killTid,NULL,killThreads,NULL);
+	pthread_join(killTid,NULL);
 	gtk_main_quit();
 }
 
 void on_SSUI_destroy(){
-	//Exit UI
-	system("exit");
+	pthread_t killTid;
+	pthread_create(&killTid,NULL,killThreads,NULL);
+	pthread_join(killTid,NULL);
+	sleep(5);
 	gtk_main_quit();
 }
 /**************************************************************************************************************/

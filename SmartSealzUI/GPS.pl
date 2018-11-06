@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 #Cahlor Stedman
+#Edited and Maintained by Brandon Mord
 #Version 1.1
 #GPS DATA GRAB using REGEX
 #SmartSealz
@@ -8,6 +9,10 @@
 
 use LWP::Simple;
 use strict;
+my $thread = $$;
+open(THREADFILE,"> DataFiles/perlThread.txt") or die ("No file");
+printf THREADFILE ("%10d",$thread);
+close THREADFILE;
 
 my $webpage1 = 'http://192.168.10.1/getSituation';
 my $source1 = get $webpage1;

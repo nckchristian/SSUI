@@ -18,6 +18,9 @@
 #include <chrono>
 #include <thread>
 #include <unistd.h>
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 //Test String for debugging
 std::string TRAFFICTEST = "{\"Icao_addr\":2837120,\"OnGround\":false,\"Lat\":42.19293,\"Lng\":-83.92148,\"Position_valid\":true,\"Alt\":3400,\"Track\":9,\"Speed\":92,\"Speed_valid\":true,\"Vvel\":0,\"Tail\":\"N123475\",\"Last_seen\":\"2015-12-22T21:29:22.241048727Z\",\"Last_source\":2}";
@@ -162,6 +165,11 @@ void handle_traffic_message(const std::string & message)
 // This program has only been tested on a linux machine.
 int main()
 {
+    int thread = getpid();
+    FILE *threads;
+    threads = fopen("DataFiles/threads.txt","a");
+    fprintf(threads,"%d\n",thread);
+    fclose(threads);
     FILE *outF;
 #ifdef _WIN32
     INT rc;
@@ -175,13 +183,7 @@ int main()
 #endif
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
-    while(stratuxTraffic==NULL){
-        outF=fopen("LoggingFile.txt","a");
-        fprintf(outF,"Error in main.cpp\n");
-        fclose(outF);
-        stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
-    }
-    assert(stratuxTraffic);
+    //assert(stratuxTraffic);
 
     while (stratuxTraffic->getReadyState() != WebSocket::CLOSED) {
       //Websocket functions

@@ -1,3 +1,9 @@
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 GtkWindow{
 	font: Comic Sans 9;
 	background: Gainsboro;
@@ -14,4 +20,9 @@ GtkToggleButton:insensitive{
 GtkSwitch:active {
 	color: white;
 	font: Comic Sans 14;
+}
+
+GtkWidget:insensitive{
+    background: DimGrey;
+	color : LightGrey;
 }

@@ -1,3 +1,9 @@
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdio.h>
@@ -6,17 +12,17 @@
 GtkButton *btnRunProgram, *btnRunProgramDemo, *btnUpdateProgram, *btnCheckConnections;
 
 void on_runProgram(){
-	system("cd SmartSealzUI && ./SSUI &");
+	system("cd SB/Smaster/SSUI/SmartSealzUI && ./SSUI &");
 }
 
 void on_runProgramDemo(){
-	system("cd SmartSealzUIDemo && ./SSUI &");
+	system("cd SB/Smaster/SSUI/SmartSealzUI && ./SSUI &");
 }
 
 void on_updateProgram(){
-	system("git pull");
-	system("cd SmartSealzUI && make bg && make");
-	system("cd SmartSealzUIDemo && make bg && make");
+	system("cd SB/Smaster/SSUI && git pull");
+	system("cd SB/Smaster/SSUI/SmartSealzUI && make bg && make");
+	system("cd SB/Smaster/SSUI/SmartSealzUIDemo && make bg && make");
 }
 
 void on_checkConnections(){
@@ -32,7 +38,7 @@ int main(int argc, char *argv[])
  
     builder = gtk_builder_new();
 
-    gtk_builder_add_from_file (builder, "SmartSealzUI/ShortcutFiles/glade/Shortcut.glade", NULL);
+    gtk_builder_add_from_file (builder, "SB/Smaster/SSUI/SmartSealzUI/ShortcutFiles/glade/Shortcut.glade", NULL);
     window = GTK_WIDGET(gtk_builder_get_object(builder, "Shortcut"));
     gtk_builder_connect_signals(builder, NULL);
     
@@ -54,9 +60,17 @@ int main(int argc, char *argv[])
     
     return 0;
 }
- 
-// called when window is closed
+/*
+    All contents of this file were written by Brandon Mord 
+    bdrmord001@gmail.com
+    
+    Original owner of git code Bmord01
+*/
 void on_window_main_destroy()
 {
+    system("exit");
     gtk_main_quit();
 }
+/*
+    All contents of this file were written by Brandon Mord 
+*/

@@ -1,3 +1,10 @@
+
+All contents of this file were written by Brandon Mord 
+bdrmord001@gmail.com
+   
+Original owner of git code Bmord01
+
+
 EXPLINATION OF CREATING A RASPBERRY PI 3 B FOR SMARTSEALZ SOFTWARE
 
 DOCUMENTATION: BRANDON MORD ~ EMAIL: bdrmord@gmail.com ~ CONTACT WITH ANY QUESTIONS
