@@ -242,6 +242,7 @@ void *checkToggles(void* arg){
     bMagHeadC=false;
     bGSC=false;
     bGPSTC=false;
+    return(NULL);
 }
 
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
