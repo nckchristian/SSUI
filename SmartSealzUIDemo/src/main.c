@@ -709,13 +709,13 @@ static gboolean _update(){
     if(bAltA){
 		//Above Target Alt
     	if(gtk_switch_get_active(Sense1)){ 
-    		if(holdAlt-inAlt > HighSenseAltitudeEB){
+    		if(holdAlt-inAlt >= HighSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
     			pid = 1;
     		}
 			//Below Target Alt
-    		else if(holdAlt-inAlt < (-1 * HighSenseAltitudeEB)){
+    		else if(holdAlt-inAlt <= (-1 * HighSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
     			pid = 2;
