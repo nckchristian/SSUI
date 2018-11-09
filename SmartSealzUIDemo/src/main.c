@@ -242,6 +242,7 @@ void *checkToggles(void* arg){
     bMagHeadC=false;
     bGSC=false;
     bGPSTC=false;
+    return(NULL);
 }
 
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
@@ -701,7 +702,7 @@ static gboolean _update(){
     gtk_label_set_label((GtkLabel *) lblTraffic,destTraffic);
     gtk_label_set_label((GtkLabel *) lblHR,destHR);
     //close files
-    fclose(inFile);    
+    //fclose(inFile);    
     pthread_join(toggleTID,NULL);
     //Print warnings if values outside holding value
     //Send warnings to haptic motors if form described in haptic funciton
@@ -946,10 +947,6 @@ void *upTPO(void *vargp){
 */
 /*****************************************  GTK Button Commands ***********************************************/
 
-
-pid_t forkslist[2];
-pid_t pid;
-bool forkedProcesses = false;
 void on_btnStart_clicked(){
     gtk_widget_set_sensitive(((GtkWidget*) btnEnd),true);
     gtk_widget_set_sensitive(((GtkWidget*) btnStart),false);

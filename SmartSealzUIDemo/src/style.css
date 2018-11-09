@@ -21,3 +21,8 @@ GtkSwitch:active {
 	color: white;
 	font: Comic Sans 14;
 }
+
+GtkWidget:insensitive{
+    background: DimGrey;
+	color : LightGrey;
+}

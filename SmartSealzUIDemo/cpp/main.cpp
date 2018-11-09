@@ -178,12 +178,18 @@ int main()
     rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (rc) {
         printf("WSAStartup Failed.\n");
-        return 1;
+        //return 1;
     }
 #endif
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
     //assert(stratuxTraffic);
+    
+    while(stratuxTraffic->getReadyState() == WebSocket::CLOSED){
+        stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic");
+        printf("Trying \n");
+        sleep(2);
+    }
 
     while (stratuxTraffic->getReadyState() != WebSocket::CLOSED) {
       //Websocket functions

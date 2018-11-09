@@ -37,7 +37,7 @@ while True:
                     import Adafruit_ADS1x15
                     init=True;
                 except:
-                    print("Heart Rate Monitor Package Error Error Occured")
+                    print("Heart Rate Initiation Error Error Occured")
                     lgs = open("LoggingFile.txt","a")
                     lgs.write("Error in heartBeats.py\n")
             adc = Adafruit_ADS1x15.ADS1015()
