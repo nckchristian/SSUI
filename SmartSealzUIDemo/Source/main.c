@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
 		fprintf(outF,"%d %.2f %d %d",(int) fAlt,fPres,(int) pitchDeg,(int) rollDeg);
 		fclose(outF);
 		//Read at 10HZ (10 times per second)
-		delay(100);
+		usleep(100);
   return 0;
 }
 /*
