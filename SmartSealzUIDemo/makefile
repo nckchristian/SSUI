@@ -29,7 +29,7 @@ LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 OBJS=	main.o
 
 compile: $(OBJS)
-	cd ShortcutFiles && make -f makefile
+	#cd ShortcutFiles && make -f makefile
 	pwd > Env.txt
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) -lm -lpthread -lX11
 	rm -f *.o
