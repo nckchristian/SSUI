@@ -28,8 +28,8 @@
 //float LowSensePressureEB=150.0,LowSensePitchEB=15.0,LowSenseRollEB=55.0,LowSenseAltitudeEB=150.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=150.0;
 
 //Demo Variables:
-float HighSensePressureEB=5.0,HighSensePitchEB=10.0,HighSenseRollEB=10.0,HighSenseAltitudeEB=2.0,HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=2.0;
-float LowSensePressureEB=10.0,LowSensePitchEB=30.0,LowSenseRollEB=30.0,LowSenseAltitudeEB=4.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=5.0;
+float HighSensePressureEB=2.0,HighSensePitchEB=10.0,HighSenseRollEB=10.0,HighSenseAltitudeEB=2.0,HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=2.0;
+float LowSensePressureEB=5.0,LowSensePitchEB=30.0,LowSenseRollEB=30.0,LowSenseAltitudeEB=4.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=5.0;
 
 static gboolean continue_timer = FALSE;
 static gboolean start_timer=FALSE;
