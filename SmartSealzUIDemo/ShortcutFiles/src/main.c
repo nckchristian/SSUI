@@ -16,7 +16,7 @@ void on_runProgram(){
 }
 
 void on_runProgramDemo(){
-	system("cd SB/master/SSUI/SmartSealzUI && ./SSUI &");
+	system("cd SB/master/SSUI/SmartSealzUIDemo && ./SSUI &");
 }
 
 void on_updateProgram(){
