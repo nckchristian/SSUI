@@ -2,16 +2,37 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-FILE *inGPS, *inFile, *inADSB, *inHR;
+
 /*
     All contents of this file were written by Brandon Mord 
     bdrmord001@gmail.com
     
     Original owner of git code Bmord01
 */
+/**************************************************************************/
+/*                     Program Starting Thread Functions                  */
+/**************************************************************************/
+void *upTraffic(void *vargp){
+	printf("Inside Traffic Thread");
+	system("./traffic.exe &");
+	return(NULL);
+}
 
-pthread_t fileTID[4];
+void *upHeartBeat(void *vargp){
+	printf("Inside Nav Thread");
+	system("python3 heartBeats.py &");
+	return(NULL);
+}
 
+void *upTPO(void *vargp){
+	printf("Inside TPO Thread");
+	system("./TPO.exe &");
+	return(NULL);
+}
+
+/**************************************************************************/
+/*                     File Reading Thread Functions                      */
+/**************************************************************************/
 void *readGPS(void * arg){
     inGPS = fopen("DataFiles/gpsdata.txt","r");
     fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
@@ -117,6 +138,11 @@ void *readADSB(void * arg){
 				
 			}
 			if(TrafficCount!=0){
+			    if(TrafficCount>prevTrafficC){
+			        //Entering Traffic
+			        pid=10;
+			        pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+			    }
 				prevTrafficC=TrafficCount;
 				//printf("SET PREV %d\n",prevTrafficC);
 			}
@@ -145,8 +171,6 @@ void *readHR(void * arg){
     fclose(inHR);
     return (NULL);
 }
-
-pthread_t toggleTID;
 
 void *checkToggles(void* arg){
     // ================================================================
@@ -245,6 +269,9 @@ void *checkToggles(void* arg){
     return(NULL);
 }
 
+/**************************************************************************/
+/*                     Haptic motor control function                      */
+/**************************************************************************/
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
 	// Create I2C buses
@@ -648,7 +675,10 @@ double CalcDist(double inLat,double inLong){
 	return d;
 }
 
-//Update the navigation data and read in traffic alerts from stratux
+/**************************************************************************/
+/*                     Information Update Function                        */
+/*                     Cycles every .25 Seconds                           */
+/**************************************************************************/
 static gboolean _update(){
 	char cmd1[50];
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
@@ -823,8 +853,15 @@ static gboolean _update(){
 		pid=7;
     }
     if(bGPSTA){
+        if(holdCourse<90.0 && GPSCourse>270.0){
+		    GPSCourse= GPSCourse - 360.0;
+	    }
+	    else if(holdCourse>270.0 && GPSCourse<90.0){
+	        GPSCourse = GPSCourse + 360.0;
+	    }
     	if(gtk_switch_get_active(Sense5)){
 			//Above Target Course
+		    printf("%f %f\n",holdCourse,GPSCourse);
     		if(holdCourse-GPSCourse >HighSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
@@ -911,33 +948,19 @@ void *upHaptic(void *vargp){
 			haptic(9,17,0,0);
 			break;
 		case 8:
-			//Track on circle needs to be accounted for
+			haptic(5,5,0,0);
 			break;
 		case 9:
-			//track on circle needs to be accounted for
+			haptic(6,5,0,0);
 			break;
+		case 10:
+		    break;
 	}
 	usleep(2000000);
 	threadRunning=false;
 	return(NULL);
 }
-void *upTraffic(void *vargp){
-	printf("Inside Traffic Thread");
-	system("./traffic.exe &");
-	return(NULL);
-}
 
-void *upHeartBeat(void *vargp){
-	printf("Inside Nav Thread");
-	system("python3 heartBeats.py &");
-	return(NULL);
-}
-
-void *upTPO(void *vargp){
-	printf("Inside TPO Thread");
-	system("./TPO.exe &");
-	return(NULL);
-}
 
 /*
     All contents of this file were written by Brandon Mord 
@@ -1109,8 +1132,8 @@ int main(int argc, char *argv[])
     gtk_widget_show(window);                
     gtk_main();
 	
-	g_timeout_add(240,_update,NULL);
-	g_timeout_add(1520,_updateGPS,NULL);
+	g_timeout_add(100,_update,NULL);
+	g_timeout_add(1000,_updateGPS,NULL);
     return 0;
 }	
 

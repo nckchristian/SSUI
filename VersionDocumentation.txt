@@ -28,8 +28,8 @@ SmartSealzUI/
         ShortCut.c                              = 1.0       Depreciated?
         ShortCutDemo.c                          = 1.0       Depreciated?
     src/
-        globalIncludes.h                        = 1.01
-        main.c                                  = 1.11
+        globalIncludes.h                        = 1.10
+        main.c                                  = 1.21
         style.css                               = 1.0
     GPS.pl                                      = 1.0
     heartBeats.py                               = 1.1

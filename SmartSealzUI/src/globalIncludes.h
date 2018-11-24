@@ -74,6 +74,9 @@ char destHR[5];
 char destAltim[10];
 char destTraffic[30];
 
+FILE *inGPS, *inFile, *inADSB, *inHR;
+pthread_t fileTID[4];
+pthread_t toggleTID;
 /*************************************************************************************************************/
 /****************************************GTK Pointer Definition **********************************************/
 GtkButton *btnStart,*btnEnd,*btnSet,*btnCalHap;
