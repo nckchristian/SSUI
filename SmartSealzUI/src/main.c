@@ -680,6 +680,8 @@ double CalcDist(double inLat,double inLong){
 /*                     Cycles every .25 Seconds                           */
 /**************************************************************************/
 static gboolean _update(){
+    system("mpstat >> CPUData.txt");
+	system("free -m >> CPUData.txt");
 	char cmd1[50];
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
@@ -984,8 +986,7 @@ void on_btnStart_clicked(){
 	        pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
 	        Background=true;
         }
-	system("mpstat >> CPUData.txt");
-	system("free -m >> CPUData.txt");
+	
         start_timer = TRUE;
         continue_timer = TRUE;
     }
