@@ -984,6 +984,8 @@ void on_btnStart_clicked(){
 	        pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
 	        Background=true;
         }
+	system("mpstat >> CPUData.txt");
+	system("free -m >> CPUData.txt");
         start_timer = TRUE;
         continue_timer = TRUE;
     }
