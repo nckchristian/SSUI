@@ -238,7 +238,44 @@ int main(int argc, char *argv){
 	aveUSM = aveUSM / (size-bad);
 	aveFSM = aveFSM / (size-bad);
 	
-	printf("\n\n%d %.2lf %.2lf\n",bad,aveU,spreadU);
+	
+	float maxU=0,minU=0,aveU=0,spreadU=0;
+	float maxN=0,minN=0,aveN=0,spreadN=0;
+	float maxS=0,minS=0,aveS=0,spreadS=0;
+	float maxI=0,minI=0,aveI=0,spreadI=0;
+	float maxST=0,minST=0,aveST=0,spreadST=0;
+	float maxID=0,minID=0,aveID=0,spreadID=0;
+	float maxT=0,minT=0,aveT=0,spreadT=0;
+	float maxUM=0,minUM=0,aveUM=0,spreadUM=0;
+	float maxF=0,minF=0,aveF=0,spreadF=0;
+	float maxSM=0,minSM=0,aveSM=0,spreadSM=0;
+	float maxB=0,minB=0,aveB=0,spreadB=0;
+	float maxCM=0,minCM=0,aveCM=0,spreadCM=0;
+	float maxUCM=0,minUCM=0,aveUCM=0,spreadUCM=0;
+	float maxFC=0,minFC=0,aveFC=0,spreadFC=0;
+	float maxTSM=0,minTSM=0,aveTSM=0,spreadTSM=0;
+	float maxUSM=0,minUSM=0,aveUSM=0,spreadUSM=0;
+	float maxFSM=0,minFSM=0,aveFSM=0,spreadFSM=0;
+	printf("\n\n%d \n",bad);
+	
+	
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxU,minU,spreadU,aveU);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxN,minN,spreadN,aveN);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxS,minS,spreadS,aveS);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxI,minI,spreadI,aveI);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxST,minST,spreadST,aveST);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxID,minID,spreadID,aveID);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxT,minT,spreadT,aveT);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxUM,minUM,spreadUM,aveUM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxF,minF,spreadF,aveF);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxSM,minSM,spreadSM,aveSM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxB,minB,spreadB,aveB);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxCM,minCM,spreadCM,aveCM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxUCM,minUCM,spreadUCM,aveUCM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxFC,minFC,spreadFC,aveFC);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxTSM,minTSM,spreadTSM,aveTSM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxUSM,minUSM,spreadUSM,aveUSM);
+	printf("Max = %.2f    Min = %.2f    Spread = %.2f    Ave = %.2f",maxFSM,minFSM,spreadFSM,aveFSM);
 	fclose(inptFile);
 	return 0;
 }
