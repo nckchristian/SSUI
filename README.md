@@ -1,6 +1,4 @@
-
-# SmartSealz Nick version 2.5
-
+# SmartSealz
 Pulling other Branches Command: 
   git clone -b {insert branch name} --single-branch {insert html stream}
 
