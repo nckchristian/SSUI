@@ -1,0 +1,18 @@
+Enter File to Open: 
+Max = 6.78    Min = 2.02    Spread = 4.76    Ave = 4.60
+Max = 0.00    Min = 0.00    Spread = 0.00    Ave = 0.00
+Max = 2.03    Min = 0.69    Spread = 1.34    Ave = 1.43
+Max = 9.66    Min = 4.32    Spread = 5.34    Ave = 6.13
+Max = 0.00    Min = 0.00    Spread = 0.00    Ave = 0.00
+Max = 92.98    Min = 81.52    Spread = 11.46    Ave = 87.84
+Max = 923.00    Min = 923.00    Spread = 0.00    Ave = 923.00
+Max = 409.00    Min = 387.00    Spread = 22.00    Ave = 402.08
+Max = 536.00    Min = 514.00    Spread = 22.00    Ave = 520.28
+Max = 8.60    Min = 8.60    Spread = 0.00    Ave = 8.60
+Max = 24.00    Min = 22.00    Spread = 2.00    Ave = 23.62
+Max = 267.00    Min = 263.00    Spread = 4.00    Ave = 266.98
+Max = 117.00    Min = 100.00    Spread = 17.00    Ave = 110.82
+Max = 822.00    Min = 805.00    Spread = 17.00    Ave = 811.51
+Max = 99.00    Min = 99.00    Spread = 0.00    Ave = 99.00
+Max = 0.00    Min = 0.00    Spread = 0.00    Ave = 0.00
+Max = 99.00    Min = 99.00    Spread = 0.00    Ave = 99.00
