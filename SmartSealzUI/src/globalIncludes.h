@@ -73,6 +73,8 @@ char destCourse[10],destHoldCourse[10];
 char destHR[5];
 char destAltim[10];
 char destTraffic[30];
+char cmd1[50];
+
 
 FILE *inGPS, *inFile, *inADSB, *inHR;
 pthread_t fileTID[4];
@@ -93,5 +95,30 @@ void *upHaptic(void *vargp);
 void *upTraffic(void *vargp);
 double CalcDist(double inLat,double inLong);
 
+int trafficThreadStatus = -1;
+int hapticThreadStatus = -1;
+int TPOThreadStatus = -1;
+int heartbeatThreadStatus = -1;
+int killThreadStatus = -1;
+int readGPSThread = -1;
+int readFileThread = -1;
+int readADSBThread = -1;
+int readHRThread = -1;
+int checkTogglesThread = -1;
+
 FILE *inGPS;
+
+enum pattern{
+    None,
+    initialize,
+    AboveAlt,
+    BelowAlt,
+    AbovePitch,
+    BelowPitch,
+    AboveRoll,
+    BelowRoll,
+    OffGroundSpeed,
+    RightOfTrack,
+    LeftOfTrack
+};
 
