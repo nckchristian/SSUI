@@ -12,17 +12,17 @@
 GtkButton *btnRunProgram, *btnRunProgramDemo, *btnUpdateProgram, *btnCheckConnections;
 
 void on_runProgram(){
-	system("cd SB/Pre-Release/SSUI/SmartSealzUI && ./SSUI &");
+	system("cd SB/master/SSUI/SmartSealzUI && ./SSUI &");
 }
 
 void on_runProgramDemo(){
-	system("cd SB/Pre-Release/SSUI/SmartSealzUIDemo && ./SSUI &");
+	system("cd SB/master/SSUI/SmartSealzUIDemo && ./SSUI &");
 }
 
 void on_updateProgram(){
-	system("cd SB/Pre-Release/SSUI && git pull");
-	system("cd SB/Pre-Release/SSUI/SmartSealzUI && make bg && make");
-	system("cd SB/Pre-Release/SSUI/SmartSealzUIDemo && make bg && make");
+	system("cd SB/master/SSUI && git pull");
+	system("cd SB/master/SSUI/SmartSealzUI && make bg && make");
+	system("cd SB/master/SSUI/SmartSealzUIDemo && make bg && make");
 }
 
 void on_checkConnections(){
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
  
     builder = gtk_builder_new();
 
-    gtk_builder_add_from_file (builder, "SB/Pre-Release/SSUI/SmartSealzUI/ShortcutFiles/glade/Shortcut.glade", NULL);
+    gtk_builder_add_from_file (builder, "SB/master/SSUI/SmartSealzUI/ShortcutFiles/glade/Shortcut.glade", NULL);
     window = GTK_WIDGET(gtk_builder_get_object(builder, "Shortcut"));
     gtk_builder_connect_signals(builder, NULL);
     
