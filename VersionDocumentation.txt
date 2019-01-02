@@ -18,57 +18,27 @@ SmartSealzUI/
         glade/
             shortcut.glade                      = 1.0
         src/
-            main.c                              = 1.0
-        makefile                                = 1.0
+            main.c                              = 2.0
+            ShortcutSource.h                    = 1.0
+        makefile                                = 2.0
     Source/
         genericIncludes.h                       = 1.0
         globalIncludes.h                        = 1.0
+        MPU6050.h                               = 1.0
         main.c                                  = 1.0
         PerlOut.c                               = 1.0
-        ShortCut.c                              = 1.0       Depreciated?
-        ShortCutDemo.c                          = 1.0       Depreciated?
     src/
-        globalIncludes.h                        = 1.10
-        main.c                                  = 1.21
+        globalIncludes.h                        = 2.0
+        main.h                                  = 1.0
+        main.c                                  = 2.0
         style.css                               = 1.0
     GPS.pl                                      = 1.0
     heartBeats.py                               = 1.1
     install.c                                   = 1.0
     makefile                                    = 1.0
-    RunMakes.c                                  = 1.0
 
-SmartSealzUIDemo/
-    cpp/
-        json/
-            json.h                              = 1.0
-            json-forwards.h                     = 1.0
-        easywsclient.cpp                        = 1.0
-        easywsclient.hpp                        = 1.0
-        jsoncpp.cpp                             = 1.0
-        main.cpp                                = 1.0
-        traffic.cpp                             = 1.0
-        traffic.h                               = 1.0
-    glade/
-        SSUI.glade                              = 1.0
-    ShortcutFiles/
-        glade/
-            shortcut.glade                      = 1.0
-        src/
-            main.c                              = 1.0
-        makefile                                = 1.0
-    Source/
-        genericIncludes.h                       = 1.0
-        globalIncludes.h                        = 1.0
-        main.c                                  = 1.0
-        PerlOut.c                               = 1.0
-        ShortCut.c                              = 1.0       Depreciated?
-        ShortCutDemo.c                          = 1.0       Depreciated?
-    src/
-        globalIncludes.h                        = 1.01
-        main.c                                  = 1.0
-        style.css                               = 1.0
-    GPS.pl                                      = 1.0
-    heartBeats.py                               = 1.0
-    install.c                                   = 1.0
-    makefile                                    = 1.0
-    RunMakes.c                                  = 1.0
+TestingFiles/
+    FileParser.c                                = 1.0
+    hapticPatternSelection.c                    = 1.0
+    hapticTesting.c                             = 1.0
+    
