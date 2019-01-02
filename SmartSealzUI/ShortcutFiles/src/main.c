@@ -4,25 +4,19 @@
     
     Original owner of git code Bmord01
 */
-#include <gtk/gtk.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-GtkButton *btnRunProgram, *btnRunProgramDemo, *btnUpdateProgram, *btnCheckConnections;
+#include "ShortcutSource.h"
 
 void on_runProgram(){
-	system("cd SB/Pre-Release/SSUI/SmartSealzUI && ./SSUI &");
+	system("cd SB/Pre-Release/SSUI/SmartSealzUI && ./SSUI 0 &");
 }
 
 void on_runProgramDemo(){
-	system("cd SB/Pre-Release/SSUI/SmartSealzUIDemo && ./SSUI &");
+	system("cd SB/Pre-Release/SSUI/SmartSealzUI && ./SSUI 1 &");
 }
 
 void on_updateProgram(){
 	system("cd SB/Pre-Release/SSUI && git pull");
 	system("cd SB/Pre-Release/SSUI/SmartSealzUI && make bg && make");
-	system("cd SB/Pre-Release/SSUI/SmartSealzUIDemo && make bg && make");
 }
 
 void on_checkConnections(){
