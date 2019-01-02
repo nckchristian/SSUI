@@ -1111,6 +1111,35 @@ int main(int argc, char *argv[])
     GtkBuilder      *builder; 
     GtkWidget       *window;
 	
+	int version = atoi(argv[1]);
+	if(version == 0){
+	   HighSensePressureEB=50.0;
+	   HighSensePitchEB=15.0;
+	   HighSenseRollEB=20.0;
+	   HighSenseAltitudeEB=50.0;
+	   HighSenseGPSTrack = 5.0;
+	   HighSenseGPSGroundS=50.0;
+	   LowSensePressureEB=150.0;
+	   LowSensePitchEB=15.0;
+	   LowSenseRollEB=55.0;
+	   LowSenseAltitudeEB=150.0;
+	   LowSenseGPSTrack = 15.0;
+	   LowSenseGPSGroundS=150.0;
+	}
+	else{
+	  HighSensePressureEB=5.0;
+	  HighSensePitchEB=10.0;
+	  HighSenseRollEB=10.0;
+	  HighSenseAltitudeEB=2.0;
+	  HighSenseGPSTrack = 5.0;
+	  HighSenseGPSGroundS=2.0;
+	  LowSensePressureEB=10.0;
+	  LowSensePitchEB=30.0;
+	  LowSenseRollEB=30.0;
+	  LowSenseAltitudeEB=4.0;
+	  LowSenseGPSTrack = 15.0;
+	  LowSenseGPSGroundS=5.0;
+	}
     gtk_init(&argc, &argv);
 
     builder = gtk_builder_new();
@@ -1216,11 +1245,13 @@ void *killThreads(void *args){
 
 void on_btnClose_clicked(){
 	pthread_t killTid;
-	killThreadStatus=pthread_create(&killTid,NULL,killThreads,NULL);
-	while(killThreadStatus!=0){
+	if(initialized){
 	    killThreadStatus=pthread_create(&killTid,NULL,killThreads,NULL);
+	    while(killThreadStatus!=0){
+	        killThreadStatus=pthread_create(&killTid,NULL,killThreads,NULL);
+	    }
+	    pthread_join(killTid,NULL);
 	}
-	pthread_join(killTid,NULL);
 	gtk_main_quit();
 }
 
