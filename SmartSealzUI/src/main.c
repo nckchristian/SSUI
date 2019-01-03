@@ -1,7 +1,5 @@
 #include "globalIncludes.h"
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
+#include "main.h"
 
 /*
     All contents of this file were written by Brandon Mord 
@@ -14,19 +12,31 @@
 /**************************************************************************/
 void *upTraffic(void *vargp){
 	printf("Inside Traffic Thread");
-	system("./traffic.exe &");
+	int trafficPid = system("./traffic.exe &");
+	while(trafficPid==-1){
+	    usleep(1000000)
+	    trafficPid = system("./traffic.exe &");
+	}
 	return(NULL);
 }
 
 void *upHeartBeat(void *vargp){
 	printf("Inside Nav Thread");
-	system("python3 heartBeats.py &");
+	int heartbeatPID = system("python3 heartBeats.py &");
+	while(heartbeatPID==-1){
+	    usleep(1000000);
+	    heartbeatPID = system("python3 heartBeats.py &");
+	}
 	return(NULL);
 }
 
 void *upTPO(void *vargp){
 	printf("Inside TPO Thread");
-	system("./TPO.exe &");
+	int tpoPID = system("./TPO.exe &");
+	while(tpoPID==-1){
+	    usleep(1000000);
+	    heartbeatPID = system("python3 heartBeats.py &");
+	}
 	return(NULL);
 }
 
