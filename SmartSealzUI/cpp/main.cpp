@@ -184,11 +184,9 @@ int main()
 
     stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic"); //getSituation
     //assert(stratuxTraffic);
-    
     while(stratuxTraffic->getReadyState() == WebSocket::CLOSED){
         stratuxTraffic = WebSocket::from_url("ws://192.168.10.1/traffic");
-        printf("Trying \n");
-        sleep(2);
+        sleep(1);
     }
 
     while (stratuxTraffic->getReadyState() != WebSocket::CLOSED) {

@@ -14,7 +14,7 @@ void *upTraffic(void *vargp){
 	printf("Inside Traffic Thread");
 	int trafficPid = system("./traffic.exe &");
 	while(trafficPid==-1){
-	    usleep(1000000)
+	    usleep(1000000);
 	    trafficPid = system("./traffic.exe &");
 	}
 	return(NULL);
@@ -35,7 +35,7 @@ void *upTPO(void *vargp){
 	int tpoPID = system("./TPO.exe &");
 	while(tpoPID==-1){
 	    usleep(1000000);
-	    heartbeatPID = system("python3 heartBeats.py &");
+	    tpoPID = system("python3 heartBeats.py &");
 	}
 	return(NULL);
 }
