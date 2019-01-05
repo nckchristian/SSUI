@@ -5,7 +5,7 @@
 #    Original owner of git code Bmord01
 #
 # change application name here (executable output name)
-TARGET=Shortcut
+TARGET=SmartSealz
 
 # compiler
 CC=gcc
