@@ -30,7 +30,7 @@ OBJS=	main.o
  
 all: $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
-	mv Shortcut /home/bmord/Desktop
+	mv Shortcut /home/pi/Desktop
 	rm -f *.o
     
 main.o: src/main.c
