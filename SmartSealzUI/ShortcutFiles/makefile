@@ -5,7 +5,7 @@
 #    Original owner of git code Bmord01
 #
 # change application name here (executable output name)
-TARGET=Shortcut
+TARGET=SmartSealz
 
 # compiler
 CC=gcc
@@ -30,7 +30,7 @@ OBJS=	main.o
  
 all: $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
-	mv Shortcut /home/pi/Desktop
+	mv Shortcut /home/bmord/Desktop
 	rm -f *.o
     
 main.o: src/main.c
