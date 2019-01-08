@@ -15,6 +15,6 @@ int main(){
 	strcpy(cmd,"./GPS.pl");
 	while(1){
 		system(cmd);
-		return 1;
 	}
+return 0;
 }

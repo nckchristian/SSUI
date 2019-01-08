@@ -24,12 +24,19 @@
 /******************************************************************************/
 /**************************** Variables ***************************************/
 //Full Version Variables
-float HighSensePressureEB=50.0,HighSensePitchEB=15.0,HighSenseRollEB=20.0,HighSenseAltitudeEB=50.0, HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=50.0;
-float LowSensePressureEB=150.0,LowSensePitchEB=15.0,LowSenseRollEB=55.0,LowSenseAltitudeEB=150.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=150.0;
+float HighSensePressureEB,
+    HighSensePitchEB,
+    HighSenseRollEB,
+    HighSenseAltitudeEB,
+    HighSenseGPSTrack,
+    HighSenseGPSGroundS,
+    LowSensePressureEB,
+    LowSensePitchEB,
+    LowSenseRollEB,
+    LowSenseAltitudeEB,
+    LowSenseGPSTrack,
+    LowSenseGPSGroundS;
 
-//Demo Variables:
-//float HighSensePressureEB=5.0,HighSensePitchEB=10.0,HighSenseRollEB=10.0,HighSenseAltitudeEB=2.0,HighSenseGPSTrack = 5.0,HighSenseGPSGroundS=2.0;
-//float LowSensePressureEB=10.0,LowSensePitchEB=30.0,LowSenseRollEB=30.0,LowSenseAltitudeEB=4.0,LowSenseGPSTrack = 15.0,LowSenseGPSGroundS=5.0;
 
 static gboolean continue_timer = FALSE;
 static gboolean start_timer=FALSE;
@@ -73,7 +80,12 @@ char destCourse[10],destHoldCourse[10];
 char destHR[5];
 char destAltim[10];
 char destTraffic[30];
+char cmd1[50];
 
+
+FILE *inGPS, *inFile, *inADSB, *inHR;
+pthread_t fileTID[4];
+pthread_t toggleTID;
 /*************************************************************************************************************/
 /****************************************GTK Pointer Definition **********************************************/
 GtkButton *btnStart,*btnEnd,*btnSet,*btnCalHap;
@@ -90,5 +102,30 @@ void *upHaptic(void *vargp);
 void *upTraffic(void *vargp);
 double CalcDist(double inLat,double inLong);
 
+int trafficThreadStatus = -1;
+int hapticThreadStatus = -1;
+int TPOThreadStatus = -1;
+int heartbeatThreadStatus = -1;
+int killThreadStatus = -1;
+int readGPSThread = -1;
+int readFileThread = -1;
+int readADSBThread = -1;
+int readHRThread = -1;
+int checkTogglesThread = -1;
+
 FILE *inGPS;
+
+enum pattern{
+    None,
+    initialize,
+    AboveAlt,
+    BelowAlt,
+    AbovePitch,
+    BelowPitch,
+    AboveRoll,
+    BelowRoll,
+    OffGroundSpeed,
+    RightOfTrack,
+    LeftOfTrack
+};
 

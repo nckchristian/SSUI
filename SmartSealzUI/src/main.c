@@ -1,17 +1,48 @@
 #include "globalIncludes.h"
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include "main.h"
 
-FILE *inGPS, *inFile, *inADSB, *inHR;
 /*
     All contents of this file were written by Brandon Mord 
     bdrmord001@gmail.com
     
     Original owner of git code Bmord01
 */
+/**************************************************************************/
+/*                     Program Starting Thread Functions                  */
+/**************************************************************************/
+void *upTraffic(void *vargp){
+	printf("Inside Traffic Thread");
+	int trafficPid = system("./traffic.exe &");
+	while(trafficPid==-1){
+	    usleep(1000000);
+	    trafficPid = system("./traffic.exe &");
+	}
+	return(NULL);
+}
 
-pthread_t fileTID[4];
+void *upHeartBeat(void *vargp){
+	printf("Inside Nav Thread");
+	int heartbeatPID = system("python3 heartBeats.py &");
+	while(heartbeatPID==-1){
+	    usleep(1000000);
+	    heartbeatPID = system("python3 heartBeats.py &");
+	}
+	return(NULL);
+}
 
+void *upTPO(void *vargp){
+	printf("Inside TPO Thread");
+	int tpoPID = system("./TPO.exe &");
+	while(tpoPID==-1){
+	    usleep(1000000);
+	    tpoPID = system("python3 heartBeats.py &");
+	}
+	return(NULL);
+}
+
+/**************************************************************************/
+/*                     File Reading Thread Functions                      */
+/**************************************************************************/
 void *readGPS(void * arg){
     inGPS = fopen("DataFiles/gpsdata.txt","r");
     fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
@@ -117,6 +148,15 @@ void *readADSB(void * arg){
 				
 			}
 			if(TrafficCount!=0){
+			    if(TrafficCount>prevTrafficC){
+			        //Entering Traffic
+			        pid=10;
+			        hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+			        while(hapticThreadStatus != 0){
+			            hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+			            printf("STUCK\n");
+			        }
+			    }
 				prevTrafficC=TrafficCount;
 				//printf("SET PREV %d\n",prevTrafficC);
 			}
@@ -145,8 +185,6 @@ void *readHR(void * arg){
     fclose(inHR);
     return (NULL);
 }
-
-pthread_t toggleTID;
 
 void *checkToggles(void* arg){
     // ================================================================
@@ -245,6 +283,9 @@ void *checkToggles(void* arg){
     return(NULL);
 }
 
+/**************************************************************************/
+/*                     Haptic motor control function                      */
+/**************************************************************************/
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
 	// Create I2C buses
@@ -616,7 +657,11 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 
 //Update gps by running GPS.pl script while connected to stratux wifi
 static gboolean _updateGPS(){
-	pthread_create(&fileTID[0],NULL,readGPS,NULL);
+	readGPSThread = pthread_create(&fileTID[0],NULL,readGPS,NULL);
+	while(readGPSThread != 0){
+	    readGPSThread = pthread_create(&fileTID[0],NULL,readGPS,NULL);
+	    printf("STUCK\n");
+	}
 	pthread_join(fileTID[0],NULL);
     return continue_timer;
 }
@@ -648,15 +693,34 @@ double CalcDist(double inLat,double inLong){
 	return d;
 }
 
-//Update the navigation data and read in traffic alerts from stratux
+/**************************************************************************/
+/*                     Information Update Function                        */
+/*                     Cycles every .25 Seconds                           */
+/**************************************************************************/
 static gboolean _update(){
-	char cmd1[50];
+    //system("iostat >> CPUData.txt");
+	//system("free -h >> CPUData.txt");
+	
+	memset(cmd1,'\0',50);
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
+    printf("%s\n",cmd1);
     system(cmd1);
-    pthread_create(&fileTID[1],NULL,readFile,NULL);
-    pthread_create(&fileTID[2],NULL,readADSB,NULL);
-    pthread_create(&fileTID[3],NULL,readHR,NULL);
+    readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
+    while(readFileThread!=0){
+        readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
+        printf("STUCK\n");
+    }
+    readADSBThread=pthread_create(&fileTID[2],NULL,readADSB,NULL);
+    while(readADSBThread!=0){
+        readADSBThread=pthread_create(&fileTID[2],NULL,readADSB,NULL);
+        printf("STUCK\n");
+    }
+    readHRThread = pthread_create(&fileTID[3],NULL,readHR,NULL);
+    while(readHRThread!=0){
+        readHRThread = pthread_create(&fileTID[3],NULL,readHR,NULL);
+        printf("STUCK\n");
+    }
     int threadJoins;
     for(threadJoins=1;threadJoins<4;threadJoins++){
         pthread_join(fileTID[threadJoins],NULL);
@@ -669,7 +733,11 @@ static gboolean _update(){
     bGSA=gtk_toggle_button_get_active((GtkToggleButton*) tbGS);
     bGPSTA=gtk_toggle_button_get_active((GtkToggleButton*) tbGPST);
     
-    pthread_create(&toggleTID,NULL,checkToggles,NULL);
+    checkTogglesThread=pthread_create(&toggleTID,NULL,checkToggles,NULL);
+    while(checkTogglesThread!=0){
+        checkTogglesThread=pthread_create(&toggleTID,NULL,checkToggles,NULL);
+        printf("STUCK\n");
+    }
     
     //Prepare all strings to be printed in gtk labels
     sprintf(destAlt,"%d",inAlt);
@@ -712,13 +780,13 @@ static gboolean _update(){
     		if(holdAlt-inAlt > HighSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			pid = 1;
+    			pid = AboveAlt;
     		}
 			//Below Target Alt
     		else if(holdAlt-inAlt < (-1 * HighSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
-    			pid = 2;
+    			pid = BelowAlt;
     		}
     	}
     	else{
@@ -726,13 +794,13 @@ static gboolean _update(){
     		if(holdAlt-inAlt >LowSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			pid = 1;
+    			pid = AboveAlt;
     		}
 			//Below Target Alt
     		else if(holdAlt-inAlt < (-1 * LowSenseAltitudeEB)){
     			gtk_label_set_label(warning,"ALTITUDE WARNING VFR");
     			display=true;
-    			pid=2;
+    			pid=BelowAlt;
     		}
     	}
     }
@@ -742,13 +810,13 @@ static gboolean _update(){
     		if(holdPitch-inPitch>HighSensePitchEB){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				pid=3;
+				pid=AbovePitch;
     		}
 			//Below Target Pitch
     		else if(holdPitch-inPitch< (-1*HighSensePitchEB)){
 				gtk_label_set_label(warning,"PITCH WARNING IFR");
 				display=true;
-				pid=4;
+				pid=BelowPitch;
     		}
     	}
     	else{
@@ -756,13 +824,13 @@ static gboolean _update(){
 				//Above Target Pitch
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				pid=3;
+				pid=AbovePitch;
     		}
     		else if(holdPitch-inPitch<(-1*LowSensePitchEB)){
 				//Below Target Pitch
 				gtk_label_set_label(warning,"PITCH WARNING VFR");
 				display=true;
-				pid=4;
+				pid=BelowPitch;
     		}
     	}
     }
@@ -772,13 +840,13 @@ static gboolean _update(){
     		if(holdRoll-inRoll>HighSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			pid=5;
+    			pid=AboveRoll;
     		}
 			//Below Target Roll
     		else if(holdRoll-inRoll<(-1*HighSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING IFR");
     			display=true;
-    			pid=6;
+    			pid=BelowRoll;
     		}
     	}
     	else{
@@ -786,13 +854,13 @@ static gboolean _update(){
     		if(holdRoll-inRoll>LowSenseRollEB){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			pid=5;
+    			pid=AboveRoll;
     		}
 			//Below Target Roll
     		else if(holdRoll-inRoll<(-1*LowSenseRollEB)){
     			gtk_label_set_label(warning,"ROLL WARNING VFR");
     			display=true;
-    			pid=6;
+    			pid=BelowRoll;
     		}
     	}
     }
@@ -820,20 +888,27 @@ static gboolean _update(){
     			display=true;
     		}
     	}
-		pid=7;
+		pid=OffGroundSpeed;
     }
     if(bGPSTA){
+        if(holdCourse<90.0 && GPSCourse>270.0){
+		    GPSCourse= GPSCourse - 360.0;
+	    }
+	    else if(holdCourse>270.0 && GPSCourse<90.0){
+	        GPSCourse = GPSCourse + 360.0;
+	    }
     	if(gtk_switch_get_active(Sense5)){
 			//Above Target Course
+		    printf("%f %f\n",holdCourse,GPSCourse);
     		if(holdCourse-GPSCourse >HighSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			pid=8;
+    			pid=RightOfTrack;
     		}
     		else if(holdCourse-GPSCourse<(-1 * HighSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			pid=9;
+    			pid=LeftOfTrack;
     		}
     	}
     	else{
@@ -841,12 +916,12 @@ static gboolean _update(){
     		if(holdCourse-GPSCourse >LowSenseGPSTrack){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			pid=8;
+    			pid=RightOfTrack;
     		}
     		else if(holdCourse-GPSCourse<(-1 * LowSenseGPSTrack)){
     			gtk_label_set_label(warning,"TRACK WARNING VFR");
     			display=true;
-    			pid=9;
+    			pid=LeftOfTrack;
     		}
     	}
 		
@@ -854,12 +929,16 @@ static gboolean _update(){
     //if there is no warning change warning label to nothing
     if(!display){
     	gtk_label_set_label(warning,"...");
-		pid=-1;
+		pid=None;
     }
 	
 	if(!threadRunning){
 		threadRunning=true;
-		pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+		hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+		while(hapticThreadStatus!=0){
+		    hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+		    printf("STUCK\n");
+		}
 		printf("\nHaptic Thread Run\n");
 	}
 	
@@ -880,64 +959,50 @@ void *upHaptic(void *vargp){
 	int pattern = *inPat;
 	printf("\n\npattern number: %d\n\n",pattern);
 	switch(pattern){
-		case -1:
+		case None:
 			break;
-		case 0:
+		case initialize:
 			haptic(0,0,0,0);
 			return NULL;
-		case 1:
+		case AboveAlt:
 			haptic(7,16,16,16);
 			break;
-		case 2:
+		case BelowAlt:
 			haptic(8,12,12,12);
 			break;
-		case 3:
+		case AbovePitch:
 			haptic(7,17,0,0);
 			break;
-		case 4:
+		case BelowPitch:
 			haptic(8,17,0,0);
 			break;
-		case 5:
+		case AboveRoll:
 			haptic(3,17,0,0);
 			usleep(100000);
 			haptic(2,17,0,0);
 			break;
-		case 6:
+		case BelowRoll:
 			haptic(1,17,0,0);
 			usleep(100000);
 			haptic(4,17,0,0);
 			break;
-		case 7:
+		case OffGroundSpeed:
 			haptic(9,17,0,0);
 			break;
-		case 8:
-			//Track on circle needs to be accounted for
+		case RightOfTrack:
+			haptic(5,5,0,0);
 			break;
-		case 9:
-			//track on circle needs to be accounted for
+		case LeftOfTrack:
+			haptic(6,5,0,0);
 			break;
+		case 11:
+		    break;
 	}
 	usleep(2000000);
 	threadRunning=false;
 	return(NULL);
 }
-void *upTraffic(void *vargp){
-	printf("Inside Traffic Thread");
-	system("./traffic.exe &");
-	return(NULL);
-}
 
-void *upHeartBeat(void *vargp){
-	printf("Inside Nav Thread");
-	system("python3 heartBeats.py &");
-	return(NULL);
-}
-
-void *upTPO(void *vargp){
-	printf("Inside TPO Thread");
-	system("./TPO.exe &");
-	return(NULL);
-}
 
 /*
     All contents of this file were written by Brandon Mord 
@@ -956,11 +1021,21 @@ void on_btnStart_clicked(){
         g_timeout_add(240,_update, NULL);//Timer for navigation data
         g_timeout_add(1520,_updateGPS,NULL);//Timer for stratux GPS updates
         if(!Background){
-          pthread_create(&tid[0],NULL,upTPO,((void *)tid[0]));
-	        pthread_create(&tid[1],NULL,upTraffic,((void *)tid[1]));
-	        pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
+            TPOThreadStatus=pthread_create(&tid[0],NULL,upTPO,((void *)tid[0]));
+            while(TPOThreadStatus!=0){
+                TPOThreadStatus=pthread_create(&tid[0],NULL,upTPO,((void *)tid[0]));
+            }
+	        trafficThreadStatus=pthread_create(&tid[1],NULL,upTraffic,((void *)tid[1]));
+	        while(trafficThreadStatus!=0){
+	            trafficThreadStatus=pthread_create(&tid[1],NULL,upTraffic,((void *)tid[1]));
+	        }
+	        heartbeatThreadStatus=pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
+	        while(heartbeatThreadStatus!=0){
+	            heartbeatThreadStatus=pthread_create(&tid[2],NULL,upHeartBeat,((void *)tid[2]));
+	        }
 	        Background=true;
         }
+	
         start_timer = TRUE;
         continue_timer = TRUE;
     }
@@ -1046,6 +1121,35 @@ int main(int argc, char *argv[])
     GtkBuilder      *builder; 
     GtkWidget       *window;
 	
+	int version = atoi(argv[1]);
+	if(version == 0){
+	   HighSensePressureEB=50.0;
+	   HighSensePitchEB=15.0;
+	   HighSenseRollEB=20.0;
+	   HighSenseAltitudeEB=50.0;
+	   HighSenseGPSTrack = 5.0;
+	   HighSenseGPSGroundS=50.0;
+	   LowSensePressureEB=150.0;
+	   LowSensePitchEB=15.0;
+	   LowSenseRollEB=55.0;
+	   LowSenseAltitudeEB=150.0;
+	   LowSenseGPSTrack = 15.0;
+	   LowSenseGPSGroundS=150.0;
+	}
+	else{
+	  HighSensePressureEB=5.0;
+	  HighSensePitchEB=10.0;
+	  HighSenseRollEB=10.0;
+	  HighSenseAltitudeEB=2.0;
+	  HighSenseGPSTrack = 5.0;
+	  HighSenseGPSGroundS=2.0;
+	  LowSensePressureEB=10.0;
+	  LowSensePitchEB=30.0;
+	  LowSenseRollEB=30.0;
+	  LowSenseAltitudeEB=4.0;
+	  LowSenseGPSTrack = 15.0;
+	  LowSenseGPSGroundS=5.0;
+	}
     gtk_init(&argc, &argv);
 
     builder = gtk_builder_new();
@@ -1109,34 +1213,41 @@ int main(int argc, char *argv[])
     gtk_widget_show(window);                
     gtk_main();
 	
-	g_timeout_add(240,_update,NULL);
-	g_timeout_add(1520,_updateGPS,NULL);
+	g_timeout_add(100,_update,NULL);
+	g_timeout_add(1000,_updateGPS,NULL);
     return 0;
 }	
 
 void *killThreads(void *args){
     //Exit UI
+    char endCmd[25];
+    memset(endCmd,'\0',25);
 	int ADSBThread;
 	FILE *perlThread = fopen("DataFiles/perlThread.txt","r");
 	fscanf(perlThread,"%d",&ADSBThread);
 	fclose(perlThread);
-	char cmd[25];
-	sprintf(cmd,"kill %d",ADSBThread);
-	system(cmd);
+	printf("%d \n",ADSBThread);
+	sprintf(endCmd,"kill %d",ADSBThread);
+	system(endCmd);
+	memset(endCmd,'\0',25);
 	int thread1=0,thread2=0;
 	FILE *threads = fopen("DataFiles/threads.txt","r");
 	fscanf(threads,"%d\n %d\n",&thread1,&thread2);
-	sprintf(cmd,"kill %d",thread1);
-	system(cmd);
-	sprintf(cmd,"kill %d",thread2);
-	system(cmd);
+	sprintf(endCmd,"kill %d",thread1);
+	system(endCmd);
+	memset(endCmd,'\0',25);
+	sprintf(endCmd,"kill %d",thread2);
+	system(endCmd);
+	memset(endCmd,'\0',25);
 	fclose(threads);
 	system("rm DataFiles/threads.txt");
-	system(cmd);
+	system(endCmd);
+	memset(endCmd,'\0',25);
 	FILE *pythonT = fopen("DataFiles/pythonThread.txt","r");
 	fscanf(pythonT,"%d",&ADSBThread);
-	sprintf(cmd,"kill %d",ADSBThread);
-	system(cmd);
+	sprintf(endCmd,"kill %d",ADSBThread);
+	system(endCmd);
+	memset(endCmd,'\0',25);
 	fclose(pythonT);
 	system("rm DataFiles/pythonThread.txt");
     return NULL;
@@ -1144,8 +1255,13 @@ void *killThreads(void *args){
 
 void on_btnClose_clicked(){
 	pthread_t killTid;
-	pthread_create(&killTid,NULL,killThreads,NULL);
-	pthread_join(killTid,NULL);
+	if(initialized){
+	    killThreadStatus=pthread_create(&killTid,NULL,killThreads,NULL);
+	    while(killThreadStatus!=0){
+	        killThreadStatus=pthread_create(&killTid,NULL,killThreads,NULL);
+	    }
+	    pthread_join(killTid,NULL);
+	}
 	gtk_main_quit();
 }
 
