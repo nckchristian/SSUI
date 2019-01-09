@@ -51,5 +51,6 @@ clean:
 	rm -f *.o $(TARGET) 
 	rm -f *.out
 install:
-	gcc -g install.c -o install.exe
-	./install.exe
+	gcc -g Source/install.c -o Source/install.exe
+	./Source/install.exe
+	rm Source/install.exe
