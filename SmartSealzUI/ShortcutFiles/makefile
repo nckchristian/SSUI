@@ -30,7 +30,7 @@ OBJS=	main.o
  
 all: $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
-	mv Shortcut /home/pi/Desktop
+	mv SmartSealz /home/pi/Desktop
 	rm -f *.o
     
 main.o: src/main.c
