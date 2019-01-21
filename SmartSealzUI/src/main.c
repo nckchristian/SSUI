@@ -1,3 +1,15 @@
+/*!
+ * \brief SmartSealz Project
+ * \details SmartSealz Development
+ * \details Main Glade Source Code
+ * \author Brandon Mord
+ * \date 2017-2019
+ */
+ 
+/** \defgroup gladeMain Main Glade Source
+ * @brief Source Code Controlling Main Interface
+ * @{
+ */
 #include "globalIncludes.h"
 #include "main.h"
 
@@ -7,9 +19,6 @@
     
     Original owner of git code Bmord01
 */
-/**************************************************************************/
-/*                     Program Starting Thread Functions                  */
-/**************************************************************************/
 void *upTraffic(void *vargp){
 	printf("Inside Traffic Thread");
 	int trafficPid = system("./traffic.exe &");
@@ -40,9 +49,16 @@ void *upTPO(void *vargp){
 	return(NULL);
 }
 
-/**************************************************************************/
+void *runNav(void *vargp){
+    memset(cmd1,'\0',50);
+    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
+    strcat(cmd1,destAltim);
+    printf("%s\n",cmd1);
+    system(cmd1);
+    return NULL;
+}
 /*                     File Reading Thread Functions                      */
-/**************************************************************************/
+
 void *readGPS(void * arg){
     inGPS = fopen("DataFiles/gpsdata.txt","r");
     fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
@@ -187,9 +203,9 @@ void *readHR(void * arg){
 }
 
 void *checkToggles(void* arg){
-    // ================================================================
-	// ===                Check for any changes in toggle states    ===
-	// ================================================================
+    // 
+	//                 Check for any changes in toggle states    
+	// 
     if(bAltA && !bAlt){
     	bAlt=true;
     	bAltC=true;
@@ -283,9 +299,9 @@ void *checkToggles(void* arg){
     return(NULL);
 }
 
-/**************************************************************************/
+
 /*                     Haptic motor control function                      */
-/**************************************************************************/
+
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
 	// Create I2C buses
@@ -693,19 +709,19 @@ double CalcDist(double inLat,double inLong){
 	return d;
 }
 
-/**************************************************************************/
+
 /*                     Information Update Function                        */
 /*                     Cycles every .25 Seconds                           */
-/**************************************************************************/
+
 static gboolean _update(){
     //system("iostat >> CPUData.txt");
 	//system("free -h >> CPUData.txt");
 	
-	memset(cmd1,'\0',50);
-    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
-    strcat(cmd1,destAltim);
-    printf("%s\n",cmd1);
-    system(cmd1);
+	navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
+	while(navThread != 0){
+	    navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
+	}
+	pthread_join(fileTID[4],NULL);
     readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
     while(readFileThread!=0){
         readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
@@ -953,7 +969,7 @@ static gboolean _update(){
     
     Original owner of git code Bmord01
 */
-/*****************************************  Thread Commands **************************************************/
+/*  Thread Commands */
 void *upHaptic(void *vargp){
 	int *inPat = (int*) vargp;
 	int pattern = *inPat;
@@ -1010,7 +1026,7 @@ void *upHaptic(void *vargp){
     
     Original owner of git code Bmord01
 */
-/*****************************************  GTK Button Commands ***********************************************/
+/*GTK Button Commands */
 
 void on_btnStart_clicked(){
     gtk_widget_set_sensitive(((GtkWidget*) btnEnd),true);
@@ -1112,8 +1128,8 @@ void rangeChange(){
 		gtk_widget_set_sensitive(((GtkWidget*) tbTenM),true);
 	}
 }
-/*************************************************************************************************************/
-/****************************************GTK Main Setup ******************************************************/
+
+/* GTK Main Setup */
 
 int main(int argc, char *argv[])
 {
@@ -1272,6 +1288,6 @@ void on_SSUI_destroy(){
 	sleep(5);
 	gtk_main_quit();
 }
-/**************************************************************************************************************/
 
+/** @} */ /* end of gladeMain */
 
