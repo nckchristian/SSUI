@@ -5,12 +5,12 @@
  * \author Brandon Mord
  * \date 2017-2019
  */
- 
- 
+
+
 /*
-    All contents of this file were written by Brandon Mord 
+    All contents of this file were written by Brandon Mord
     bdrmord001@gmail.com
-    
+
     Original owner of git code Bmord01
 */
 /** \defgroup install Install
@@ -54,13 +54,13 @@ void installSPICore(){
  * @brief Install Perl Compilation Tools on Linux Machine
  */
 void installPerl(){
-    system("sudo perl -MCPAN -e'install \"LWP::Simple\"\' -y");
+    system("sudo perl -MCPAN -e'install \"LWP::Simple\"\'");
 }
 /** installADAFRUIT
  * @brief Install Adafruit Library Tools on Linux Machine
  */
 void installADAFRUIT(){
-    system("sudo pip3 install adafruit-ads1x15 -y");
+    system("sudo pip3 install adafruit-ads1x15");
 }
 /** upgrade
  * @brief Run System Upgrade on Linux Machine
@@ -76,7 +76,7 @@ void update(){
 }
 /** @} */ /* end of System */
 int main(){
-    
+
 	installGlade();
 	installGTKlib();
 	installI2Clib();
