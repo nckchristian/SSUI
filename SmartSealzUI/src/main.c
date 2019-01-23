@@ -2,9 +2,9 @@
 #include "main.h"
 
 /*
-    All contents of this file were written by Brandon Mord 
+    All contents of this file were written by Brandon Mord
     bdrmord001@gmail.com
-    
+
     Original owner of git code Bmord01
 */
 /**************************************************************************/
@@ -46,10 +46,10 @@ void *upTPO(void *vargp){
 void *readGPS(void * arg){
     inGPS = fopen("DataFiles/gpsdata.txt","r");
     fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
-    
+
     sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
     sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
-    
+
     gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
     gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
     fclose(inGPS);
@@ -78,7 +78,7 @@ void *readADSB(void * arg){
 		count++; //count lines in traffic file
 	}
     fclose(inADSB);
-    
+
     inADSB = fopen("DataFiles/traffic.txt","r");
 	char tail[20];
 	double lat=0.0,lon=0.0;
@@ -145,7 +145,7 @@ void *readADSB(void * arg){
 				}
 			}
 			else{
-				
+
 			}
 			if(TrafficCount!=0){
 			    if(TrafficCount>prevTrafficC){
@@ -259,7 +259,7 @@ void *checkToggles(void* arg){
     }
     if(bGSC){
     	if(bGS){
-    		holdGS=GPSGroundSpeed;	
+    		holdGS=GPSGroundSpeed;
     	}
     	else{
     		holdGS=-1;
@@ -360,50 +360,50 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 	{
 		printf("Invalid Motor Selection\n");
 	}
-	
+
 	if (wave1 == 0) //No wave forms selected - Initialization and calibration of haptic ERM motors
 	{
 		//configures IO expander TCA for output to all 4 motors for cali
 		char config[2] = {0};
-		config[0] = 0x03; 
-		config[1] = 0xF0; 
+		config[0] = 0x03;
+		config[1] = 0xF0;
 		write(tca, config, 2);
 
 		//Sends a high signal to output channel
-		config[0] = 0x01; 
-		config[1] = 0x0F; 
+		config[0] = 0x01;
+		config[1] = 0x0F;
 		write(tca, config, 2);
-		
+
 		//Configures i2c switch to connect all 4 i2c lines
-		config[0] = 0; 
-		config[1] = 0x0F; 
+		config[0] = 0;
+		config[1] = 0x0F;
 		write(tcaa, config, 2);
 
 		//set rated voltage 2vrms
-		config[0] = 0x16; 
-		config[1] = 0x53; 
+		config[0] = 0x16;
+		config[1] = 0x53;
 		write(drv, config, 2);
-	
+
 		//set overdrive clamp voltage 3.6v peak
-		config[0] = 0x17; 
-		config[1] = 0xA4; 
+		config[0] = 0x17;
+		config[1] = 0xA4;
 		write(drv, config, 2);
 
 		//change mode to autocalibration
-		config[0] = 0x01; 
-		config[1] = 0x07; 
+		config[0] = 0x01;
+		config[1] = 0x07;
 		write(drv, config, 2);
-	
+
 		//set autocaltime to 500ms
-		config[0] = 0x1E; 
-		config[1] = 0x20; 
+		config[0] = 0x1E;
+		config[1] = 0x20;
 		write(drv, config, 2);
-		
+
 		//set go bit
 		config[0] = 0x0C;
-		config[1] = 0x01; 
+		config[1] = 0x01;
 		write(drv, config, 2);
-	
+
 		//polls go bit until it clears to 0
 		reg[1] = 0x0C;
 		data[1] = 0x01;
@@ -416,45 +416,45 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 				return;
 			}
 		}
-	
+
 		//set feedback control register
 		config[0] = 0x1A;
-		config[1] = 0xB6; 
+		config[1] = 0xB6;
 		write(drv, config, 2);
-		
+
 		//set control 1 register
 		config[0] = 0x1B;
-		config[1] = 0x93; 
+		config[1] = 0x93;
 		write(drv, config, 2);
 
 		//set control 2 register
 		config[0] = 0x1C;
-		config[1] = 0xF5; 
+		config[1] = 0xF5;
 		write(drv, config, 2);
-	
+
 		//set control 3 register
 		config[0] = 0x1D;
-		config[1] = 0x80; 
+		config[1] = 0x80;
 		write(drv, config, 2);
 
 		//set mode to internal trigger
 		config[0] = 0x01;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(drv, config, 2);
-	
+
 		//set waveform sequence 1 as triple-click waveform
 		config[0] = 0x04;
-		config[1] = 0x0C; 
+		config[1] = 0x0C;
 		write(drv, config, 2);
-	
+
 		//indicator that there is only one waveform that should be played
 		config[0] = 0x05;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(drv, config, 2);
-	
+
 		//set go bit
 		config[0] = 0x0C;
-		config[1] = 0x01; 
+		config[1] = 0x01;
 		write(drv, config, 2);
 
 		//poll go bit until it clears to 0
@@ -469,43 +469,43 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 				return;
 			}
 		}
-	
+
 		//deassert the EN pin for driver 1
 		config[0] = 0x00;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tca, config, 2);
 
 		//no driver i2c channels connected
 		config[0] = 0;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tcaa, config, 2);
 	}
 	else if (wave1 != 0 && wave2 == 0) // one waveform selected
 	{
 		//configures IO expander TCA for output port at channel x
 		char config[2] = {0};
-		config[0] = 0x03; 
-		config[1] = tcaSet; 
+		config[0] = 0x03;
+		config[1] = tcaSet;
 		write(tca, config, 2);
-	
+
 		//Configures i2c switch to connect channel x i2c lines
-		config[0] = 0; 
-		config[1] = tcaaSet; 
+		config[0] = 0;
+		config[1] = tcaaSet;
 		write(tcaa, config, 2);
-		
+
 		//set waveform sequence 1
 		config[0] = 0x04;
-		config[1] = wave1; 
+		config[1] = wave1;
 		write(drv, config, 2);
-	
+
 		//indicator that there is only one waveform that should be played
 		config[0] = 0x05;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(drv, config, 2);
-	
+
 		//set go bit
 		config[0] = 0x0C;
-		config[1] = 0x01; 
+		config[1] = 0x01;
 		write(drv, config, 2);
 
 		//poll go bit until it clears to 0
@@ -520,48 +520,48 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 				return;
 			}
 		}
-	
+
 		//deassert the EN pin for driver x
 		config[0] = 0x00;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tca, config, 2);
-	
+
 		//no driver i2c channels connected
 		config[0] = 0;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tcaa, config, 2);
 	}
 	else if ((wave1 != 0 && wave2 != 0) && wave3 == 0) //two waveforms selected
 	{
 		//configures IO expander TCA for output port at channel x
 		char config[2] = {0};
-		config[0] = 0x03; 
-		config[1] = tcaSet; 
+		config[0] = 0x03;
+		config[1] = tcaSet;
 		write(tca, config, 2);
-	
+
 		//Configures i2c switch to connect channel x i2c lines
-		config[0] = 0; 
-		config[1] = tcaaSet; 
+		config[0] = 0;
+		config[1] = tcaaSet;
 		write(tcaa, config, 2);
-		
+
 		//set waveform sequence 1
 		config[0] = 0x04;
-		config[1] = wave1; 
+		config[1] = wave1;
 		write(drv, config, 2);
-	
+
 		//set waveform sequence 2
 		config[0] = 0x05;
 		config[1] = wave2;
 		write(drv, config, 2);
-		
+
 		//indicator that there is only two waveform that should be played
 		config[0] = 0x06;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(drv, config, 2);
-	
+
 		//set go bit
 		config[0] = 0x0C;
-		config[1] = 0x01; 
+		config[1] = 0x01;
 		write(drv, config, 2);
 
 		//poll go bit until it clears to 0
@@ -576,53 +576,53 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 				return;
 			}
 		}
-	
+
 		//deassert the EN pin for driver x
 		config[0] = 0x00;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tca, config, 2);
-	
+
 		//no driver i2c channels connected
 		config[0] = 0;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tcaa, config, 2);
 	}
 	else if ((wave1 != 0 && wave2 != 0) && wave3 != 0) //three waveforms selected
 	{
 		//configures IO expander TCA for output port at channel x
 		char config[2] = {0};
-		config[0] = 0x03; 
-		config[1] = tcaSet; 
+		config[0] = 0x03;
+		config[1] = tcaSet;
 		write(tca, config, 2);
-	
+
 		//Configures i2c switch to connect channel x i2c lines
-		config[0] = 0; 
-		config[1] = tcaaSet; 
+		config[0] = 0;
+		config[1] = tcaaSet;
 		write(tcaa, config, 2);
-		
+
 		//set waveform sequence 1
 		config[0] = 0x04;
-		config[1] = wave1; 
+		config[1] = wave1;
 		write(drv, config, 2);
 
 		//set waveform sequence 2
 		config[0] = 0x05;
-		config[1] = wave2; 
+		config[1] = wave2;
 		write(drv, config, 2);
 
 		//set waveform sequence 3
 		config[0] = 0x06;
-		config[1] = wave3; 
+		config[1] = wave3;
 		write(drv, config, 2);
-	
+
 		//indicator that there is only three waveform that should be played
 		config[0] = 0x07;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(drv, config, 2);
-	
+
 		//set go bit
 		config[0] = 0x0C;
-		config[1] = 0x01; 
+		config[1] = 0x01;
 		write(drv, config, 2);
 
 		//poll go bit until it clears to 0
@@ -637,15 +637,15 @@ void haptic(int motorSelect, int wave1, int wave2, int wave3)
 				return;
 			}
 		}
-	
+
 		//deassert the EN pin for driver x
 		config[0] = 0x00;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tca, config, 2);
-	
+
 		//no driver i2c channels connected
 		config[0] = 0;
-		config[1] = 0x00; 
+		config[1] = 0x00;
 		write(tcaa, config, 2);
 	}
 }
@@ -666,9 +666,9 @@ static gboolean _updateGPS(){
     return continue_timer;
 }
 /*
-    All contents of this file were written by Brandon Mord 
+    All contents of this file were written by Brandon Mord
     bdrmord001@gmail.com
-    
+
     Original owner of git code Bmord01
 */
 // ================================================================
@@ -700,7 +700,7 @@ double CalcDist(double inLat,double inLong){
 static gboolean _update(){
     //system("iostat >> CPUData.txt");
 	//system("free -h >> CPUData.txt");
-	
+
 	memset(cmd1,'\0',50);
     strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
     strcat(cmd1,destAltim);
@@ -725,20 +725,20 @@ static gboolean _update(){
     for(threadJoins=1;threadJoins<4;threadJoins++){
         pthread_join(fileTID[threadJoins],NULL);
     }
-    
+
     //Get all states of toggle buttons for holding calculations
     bAltA=gtk_toggle_button_get_active((GtkToggleButton*) tbAlt);
     bPitchA=gtk_toggle_button_get_active((GtkToggleButton*) tbPitch);
     bRollA=gtk_toggle_button_get_active((GtkToggleButton*) tbRoll);
     bGSA=gtk_toggle_button_get_active((GtkToggleButton*) tbGS);
     bGPSTA=gtk_toggle_button_get_active((GtkToggleButton*) tbGPST);
-    
+
     checkTogglesThread=pthread_create(&toggleTID,NULL,checkToggles,NULL);
     while(checkTogglesThread!=0){
         checkTogglesThread=pthread_create(&toggleTID,NULL,checkToggles,NULL);
         printf("STUCK\n");
     }
-    
+
     //Prepare all strings to be printed in gtk labels
     sprintf(destAlt,"%d",inAlt);
     testc++;
@@ -749,7 +749,7 @@ static gboolean _update(){
     sprintf(destHoldAlt,"%d",holdAlt);
     sprintf(destHoldPitch,"%d",holdPitch);
     sprintf(destHoldRoll,"%d",holdRoll);
-    
+
     //Delay traffic printing to keep from constant reminders
     if(TrafficCount!=0){
 	    sprintf(destTraffic,"%d -In Range- %d",TrafficCount,((int) Range));
@@ -762,7 +762,7 @@ static gboolean _update(){
     	}
     	zeroCount++;
     }
-    
+
     //print values in gtk labels
     gtk_label_set_label((GtkLabel *) lblAltitude,destAlt);
     gtk_label_set_label((GtkLabel *) lblPitch,destPitch);
@@ -770,13 +770,13 @@ static gboolean _update(){
     gtk_label_set_label((GtkLabel *) lblTraffic,destTraffic);
     gtk_label_set_label((GtkLabel *) lblHR,destHR);
     //close files
-    //fclose(inFile);    
+    //fclose(inFile);
     pthread_join(toggleTID,NULL);
     //Print warnings if values outside holding value
     //Send warnings to haptic motors if form described in haptic funciton
     if(bAltA){
 		//Above Target Alt
-    	if(gtk_switch_get_active(Sense1)){ 
+    	if(gtk_switch_get_active(Sense1)){
     		if(holdAlt-inAlt > HighSenseAltitudeEB){
     			gtk_label_set_label(warning,"ALTITUDE WARNING IFR");
     			display=true;
@@ -864,7 +864,7 @@ static gboolean _update(){
     		}
     	}
     }
-    
+
     if(bGSA){
     	if(gtk_switch_get_active(Sense4)){
 			//Above Target Ground Speed
@@ -924,14 +924,14 @@ static gboolean _update(){
     			pid=LeftOfTrack;
     		}
     	}
-		
+
 	}
     //if there is no warning change warning label to nothing
     if(!display){
     	gtk_label_set_label(warning,"...");
 		pid=None;
     }
-	
+
 	if(!threadRunning){
 		threadRunning=true;
 		hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
@@ -941,16 +941,16 @@ static gboolean _update(){
 		}
 		printf("\nHaptic Thread Run\n");
 	}
-	
+
     display=false;
     TrafficCount=0;
     skip=false;
     return continue_timer;
 }
 /*
-    All contents of this file were written by Brandon Mord 
+    All contents of this file were written by Brandon Mord
     bdrmord001@gmail.com
-    
+
     Original owner of git code Bmord01
 */
 /*****************************************  Thread Commands **************************************************/
@@ -958,46 +958,68 @@ void *upHaptic(void *vargp){
 	int *inPat = (int*) vargp;
 	int pattern = *inPat;
 	printf("\n\npattern number: %d\n\n",pattern);
+  FILE *err = fopen("errorsLog.txt","a");
 	switch(pattern){
 		case None:
 			break;
 		case initialize:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(0,0,0,0);
 			return NULL;
 		case AboveAlt:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(7,16,16,16);
 			break;
 		case BelowAlt:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(8,12,12,12);
 			break;
 		case AbovePitch:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(7,17,0,0);
 			break;
 		case BelowPitch:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(8,17,0,0);
 			break;
 		case AboveRoll:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(3,17,0,0);
-			usleep(100000);
+			usleep(10000);
 			haptic(2,17,0,0);
 			break;
 		case BelowRoll:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(1,17,0,0);
-			usleep(100000);
+			usleep(10000);
 			haptic(4,17,0,0);
 			break;
 		case OffGroundSpeed:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(9,17,0,0);
 			break;
 		case RightOfTrack:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(5,5,0,0);
 			break;
 		case LeftOfTrack:
+      system("date >> errorsLog.txt");
+      fprintf(err, " Error Type %d",initialize);
 			haptic(6,5,0,0);
 			break;
 		case 11:
 		    break;
 	}
+  fclose(err);
 	usleep(2000000);
 	threadRunning=false;
 	return(NULL);
@@ -1005,9 +1027,9 @@ void *upHaptic(void *vargp){
 
 
 /*
-    All contents of this file were written by Brandon Mord 
+    All contents of this file were written by Brandon Mord
     bdrmord001@gmail.com
-    
+
     Original owner of git code Bmord01
 */
 /*****************************************  GTK Button Commands ***********************************************/
@@ -1035,7 +1057,7 @@ void on_btnStart_clicked(){
 	        }
 	        Background=true;
         }
-	
+
         start_timer = TRUE;
         continue_timer = TRUE;
     }
@@ -1064,12 +1086,12 @@ void on_btnSet_clicked()
 	    gtk_widget_set_sensitive(((GtkWidget*) btnStart),true);
     	haptic(0,0,0,0);
     	initialized=true;
-	}	
-}	
+	}
+}
 void on_tbActiveTraffic_clicked(){
 	//Change traffic toggle buttons either to enabled or disabled depending on tbTraffic state
 	activeS = gtk_toggle_button_get_active(tbActiveTraffic);
-	
+
 	if(activeS){
 		gtk_widget_set_sensitive(((GtkWidget*)  tbOneM),true);
 		gtk_widget_set_sensitive(((GtkWidget*) tbFiveM),true);
@@ -1090,7 +1112,7 @@ void rangeChange(){
 	oneS=gtk_toggle_button_get_active(tbOneM);
 	fiveS=gtk_toggle_button_get_active(tbFiveM);
 	tenS= gtk_toggle_button_get_active(tbTenM);
-	
+
 	if(oneS){
 		gtk_widget_set_sensitive(((GtkWidget*) tbFiveM),false);
 		gtk_widget_set_sensitive(((GtkWidget*) tbTenM),false);
@@ -1118,9 +1140,9 @@ void rangeChange(){
 int main(int argc, char *argv[])
 {
     XInitThreads();
-    GtkBuilder      *builder; 
+    GtkBuilder      *builder;
     GtkWidget       *window;
-	
+
 	int version = atoi(argv[1]);
 	if(version == 0){
 	   HighSensePressureEB=50.0;
@@ -1158,7 +1180,7 @@ int main(int argc, char *argv[])
     window = GTK_WIDGET(gtk_builder_get_object(builder, "SSUI"));
     gtk_builder_connect_signals(builder, NULL);
 
-    
+
     btnStart=GTK_BUTTON(gtk_builder_get_object(builder,"btnStart"));	//Starting Reading data button assignment to pointer
     btnEnd=GTK_BUTTON(gtk_builder_get_object(builder,"btnEnd"));		//Pausing Reading data button assignment to pointer
     btnSet=GTK_BUTTON(gtk_builder_get_object(builder,"btnSet"));		//Set Altimeter number button assignment to pointer
@@ -1188,7 +1210,7 @@ int main(int argc, char *argv[])
     tbTenM =GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"tbTenM"));			//button to hold value at point of activation for Heart Rate
     warning = GTK_LABEL(gtk_builder_get_object(builder,"lblWarning"));
 	spAltim=GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"sbAltim"));	//Used to allow selection for altimeter reading
-	
+
 	//Connecting widgets to functions so that signals will run functions
 	g_signal_connect(btnStart,"clicked",G_CALLBACK (on_btnStart_clicked), NULL);
 	g_signal_connect(btnEnd, "clicked", G_CALLBACK (on_btnEnd_clicked),NULL);
@@ -1197,9 +1219,9 @@ int main(int argc, char *argv[])
 	g_signal_connect(tbOneM,"clicked",G_CALLBACK(rangeChange),NULL);
 	g_signal_connect(tbFiveM,"clicked",G_CALLBACK(rangeChange),NULL);
 	g_signal_connect(tbTenM,"clicked",G_CALLBACK(rangeChange),NULL);
-	
-	
-	
+
+
+
 	//=========================================================================
 	//= Include the CSS Document to control appearance					    ===
 	//=========================================================================
@@ -1209,14 +1231,14 @@ int main(int argc, char *argv[])
 	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(provider),GTK_STYLE_PROVIDER_PRIORITY_USER);
 
     g_object_unref(builder);
-	
-    gtk_widget_show(window);                
+
+    gtk_widget_show(window);
     gtk_main();
-	
+
 	g_timeout_add(100,_update,NULL);
 	g_timeout_add(1000,_updateGPS,NULL);
     return 0;
-}	
+}
 
 void *killThreads(void *args){
     //Exit UI
@@ -1273,5 +1295,3 @@ void on_SSUI_destroy(){
 	gtk_main_quit();
 }
 /**************************************************************************************************************/
-
-

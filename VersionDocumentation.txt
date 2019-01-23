@@ -18,7 +18,7 @@ SmartSealzUI/
         glade/
             shortcut.glade                      = 1.0
         src/
-            main.c                              = 2.0
+            main.c                              = 2.1
             ShortcutSource.h                    = 1.0
         makefile                                = 2.0
     Source/
@@ -41,4 +41,3 @@ TestingFiles/
     FileParser.c                                = 1.0
     hapticPatternSelection.c                    = 1.0
     hapticTesting.c                             = 1.0
-    
