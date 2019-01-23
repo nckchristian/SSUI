@@ -1,3 +1,15 @@
+/*!
+ * \brief SmartSealz Project
+ * \details SmartSealz Development
+ * \details Main Glade Source Code
+ * \author Brandon Mord
+ * \date 2017-2019
+ */
+ 
+/** \defgroup gladeMain Main Glade Source
+ * @brief Source Code Controlling Main Interface
+ * @{
+ */
 #include "globalIncludes.h"
 #include "main.h"
 
@@ -7,9 +19,6 @@
 
     Original owner of git code Bmord01
 */
-/**************************************************************************/
-/*                     Program Starting Thread Functions                  */
-/**************************************************************************/
 void *upTraffic(void *vargp){
 	printf("Inside Traffic Thread");
 	int trafficPid = system("./traffic.exe &");
@@ -40,19 +49,31 @@ void *upTPO(void *vargp){
 	return(NULL);
 }
 
-/**************************************************************************/
+void *runNav(void *vargp){
+    memset(cmd1,'\0',50);
+    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
+    strcat(cmd1,destAltim);
+    printf("%s\n",cmd1);
+    system(cmd1);
+    return NULL;
+}
 /*                     File Reading Thread Functions                      */
-/**************************************************************************/
+
 void *readGPS(void * arg){
     inGPS = fopen("DataFiles/gpsdata.txt","r");
-    fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
-
-    sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
-    sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
-
-    gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
-    gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
-    fclose(inGPS);
+    if(!inGPS){
+        printf("Here GPS");
+    }
+    else{
+        fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
+        
+        sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
+        sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
+        
+        gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
+        gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
+        fclose(inGPS);
+    }
     return (NULL);
 }
 
@@ -61,7 +82,10 @@ void *readFile(void * arg){
     if(!inFile){
     	printf("HERE NAV\n");
     }
-    fscanf(inFile,"%d %f %d %d",&inAlt,&inPres,&inPitch,&inRoll);//Read in Navigation Data
+    else{
+        fscanf(inFile,"%d %f %d %d",&inAlt,&inPres,&inPitch,&inRoll);//Read in Navigation Data
+        fclose(inFile);
+    }
     return (NULL);
 }
 
@@ -70,103 +94,105 @@ void *readADSB(void * arg){
     if(!inADSB){
     	printf("HERE ADSB\n");
     }
-	int count = 0;
-	char *line;
-	size_t len=0;
-	ssize_t read;
-	while((read = getline(&line,&len,inADSB))!=-1){
-		count++; //count lines in traffic file
-	}
-    fclose(inADSB);
-
-    inADSB = fopen("DataFiles/traffic.txt","r");
-	char tail[20];
-	double lat=0.0,lon=0.0;
-	int altADSB=0,track=0,speed=0;
-	int lineCount=0;
-	char storeT[50];
-	char *token;
-	int Loops = 0;
-    while(lineCount!=count){
-    	//loop through each piece of traffic in the traffic text file
-		token = strtok(fgets(storeT,50,inADSB)," ");
-		while(token !=NULL){
-			//Seperate infromation into fields for later use
-			switch (Loops){
-				case 0:
-					strcpy(tail,token);
-					if(strlen(tail)==0){
-						skip=true;
-						printf("SKIP\n");
-						break;
-					}
-					break;
-				case 1:
-					lat=atof(token);
-					break;
-				case 2:
-					lon=atof(token);
-					break;
-				case 3:
-					altADSB=atoi(token);
-					break;
-				case 4:
-					track=atoi(token);
-					break;
-				case 5:
-					speed=atoi(token);
-					break;
-			}
-			if(skip){
-				printf("SKIP\n");
-				continue;
-			}
-			token = strtok(NULL," ");
-			Loops++;
-		}
-		Loops=0;
-		lineCount++;
-		if(GPSLat>0 && skip==false){
-			//Do distance equation and add traffic to counter if traffic within range
-			dist = CalcDist(lat,lon);
-			if(tenS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else if(fiveS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else if(oneS){
-				if(Range>dist){
-					TrafficCount++;
-				}
-			}
-			else{
-
-			}
-			if(TrafficCount!=0){
-			    if(TrafficCount>prevTrafficC){
-			        //Entering Traffic
-			        pid=10;
-			        hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
-			        while(hapticThreadStatus != 0){
-			            hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
-			            printf("STUCK\n");
-			        }
+    else{
+	    int count = 0;
+	    char *line;
+	    size_t len=0;
+	    ssize_t read;
+	    while((read = getline(&line,&len,inADSB))!=-1){
+		    count++; //count lines in traffic file
+	    }
+        fclose(inADSB);
+        
+        inADSB = fopen("DataFiles/traffic.txt","r");
+	    char tail[20];
+	    double lat=0.0,lon=0.0;
+	    int altADSB=0,track=0,speed=0;
+	    int lineCount=0;
+	    char storeT[50];
+	    char *token;
+	    int Loops = 0;
+        while(lineCount!=count){
+        	//loop through each piece of traffic in the traffic text file
+		    token = strtok(fgets(storeT,50,inADSB)," ");
+		    while(token !=NULL){
+			    //Seperate infromation into fields for later use
+			    switch (Loops){
+				    case 0:
+					    strcpy(tail,token);
+					    if(strlen(tail)==0){
+						    skip=true;
+						    printf("SKIP\n");
+						    break;
+					    }
+					    break;
+				    case 1:
+					    lat=atof(token);
+					    break;
+				    case 2:
+					    lon=atof(token);
+					    break;
+				    case 3:
+					    altADSB=atoi(token);
+					    break;
+				    case 4:
+					    track=atoi(token);
+					    break;
+				    case 5:
+					    speed=atoi(token);
+					    break;
 			    }
-				prevTrafficC=TrafficCount;
-				//printf("SET PREV %d\n",prevTrafficC);
-			}
-		}
-		else{
-			TrafficCount=prevTrafficC;
-		}
+			    if(skip){
+				    printf("SKIP\n");
+				    continue;
+			    }
+			    token = strtok(NULL," ");
+			    Loops++;
+		    }
+		    Loops=0;
+		    lineCount++;
+		    if(GPSLat>0 && skip==false){
+			    //Do distance equation and add traffic to counter if traffic within range
+			    dist = CalcDist(lat,lon);
+			    if(tenS){
+				    if(Range>dist){
+					    TrafficCount++;
+				    }
+			    }
+			    else if(fiveS){
+				    if(Range>dist){
+					    TrafficCount++;
+				    }
+			    }
+			    else if(oneS){
+				    if(Range>dist){
+					    TrafficCount++;
+				    }
+			    }
+			    else{
+				    
+			    }
+			    if(TrafficCount!=0){
+			        if(TrafficCount>prevTrafficC){
+			            //Entering Traffic
+			            pid=10;
+			            hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+			            while(hapticThreadStatus != 0){
+			                hapticThreadStatus = pthread_create(&tid[4],NULL,upHaptic,(void *) &pid);
+			                printf("STUCK\n");
+			            }
+			        }
+				    prevTrafficC=TrafficCount;
+				    //printf("SET PREV %d\n",prevTrafficC);
+			    }
+		    }
+		    else{
+			    TrafficCount=prevTrafficC;
+		    }
+        }
+        lineCount=0;
+        fclose(inADSB);
     }
-    lineCount=0;
-    fclose(inADSB);
     return (NULL);
 }
 
@@ -175,21 +201,23 @@ void *readHR(void * arg){
     if(!inHR){
     	printf("HERE HR");
     }
-    fscanf(inHR,"%d",&HR);
-    if(prevHR==0 || HR!=0){
-    	prevHR=HR;
+    else{
+        fscanf(inHR,"%d",&HR);
+        if(prevHR==0 || HR!=0){
+        	prevHR=HR;
+        }
+        if(HR==0){
+        	HR=prevHR;
+        }
+        fclose(inHR);
     }
-    if(HR==0){
-    	HR=prevHR;
-    }
-    fclose(inHR);
     return (NULL);
 }
 
 void *checkToggles(void* arg){
-    // ================================================================
-	// ===                Check for any changes in toggle states    ===
-	// ================================================================
+    // 
+	//                 Check for any changes in toggle states    
+	// 
     if(bAltA && !bAlt){
     	bAlt=true;
     	bAltC=true;
@@ -283,9 +311,9 @@ void *checkToggles(void* arg){
     return(NULL);
 }
 
-/**************************************************************************/
+
 /*                     Haptic motor control function                      */
-/**************************************************************************/
+
 void haptic(int motorSelect, int wave1, int wave2, int wave3)
 {
 	// Create I2C buses
@@ -693,19 +721,19 @@ double CalcDist(double inLat,double inLong){
 	return d;
 }
 
-/**************************************************************************/
+
 /*                     Information Update Function                        */
 /*                     Cycles every .25 Seconds                           */
-/**************************************************************************/
+
 static gboolean _update(){
     //system("iostat >> CPUData.txt");
 	//system("free -h >> CPUData.txt");
-
-	memset(cmd1,'\0',50);
-    strcpy(cmd1,"./Nav.exe ");//navigation data connection executible
-    strcat(cmd1,destAltim);
-    printf("%s\n",cmd1);
-    system(cmd1);
+	
+	navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
+	while(navThread != 0){
+	    navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
+	}
+	pthread_join(fileTID[4],NULL);
     readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
     while(readFileThread!=0){
         readFileThread=pthread_create(&fileTID[1],NULL,readFile,NULL);
@@ -953,7 +981,7 @@ static gboolean _update(){
 
     Original owner of git code Bmord01
 */
-/*****************************************  Thread Commands **************************************************/
+/*  Thread Commands */
 void *upHaptic(void *vargp){
 	int *inPat = (int*) vargp;
 	int pattern = *inPat;
@@ -1032,7 +1060,7 @@ void *upHaptic(void *vargp){
 
     Original owner of git code Bmord01
 */
-/*****************************************  GTK Button Commands ***********************************************/
+/*GTK Button Commands */
 
 void on_btnStart_clicked(){
     gtk_widget_set_sensitive(((GtkWidget*) btnEnd),true);
@@ -1040,7 +1068,7 @@ void on_btnStart_clicked(){
 	if(!start_timer)
     {
     	//Start the timer
-        g_timeout_add(240,_update, NULL);//Timer for navigation data
+        g_timeout_add(100,_update, NULL);//Timer for navigation data
         g_timeout_add(1520,_updateGPS,NULL);//Timer for stratux GPS updates
         if(!Background){
             TPOThreadStatus=pthread_create(&tid[0],NULL,upTPO,((void *)tid[0]));
@@ -1134,8 +1162,8 @@ void rangeChange(){
 		gtk_widget_set_sensitive(((GtkWidget*) tbTenM),true);
 	}
 }
-/*************************************************************************************************************/
-/****************************************GTK Main Setup ******************************************************/
+
+/* GTK Main Setup */
 
 int main(int argc, char *argv[])
 {
@@ -1294,4 +1322,5 @@ void on_SSUI_destroy(){
 	sleep(5);
 	gtk_main_quit();
 }
-/**************************************************************************************************************/
+
+/** @} */ /* end of gladeMain */

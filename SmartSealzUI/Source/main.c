@@ -1,4 +1,13 @@
+/*!
+ * \brief SmartSealz Project
+ * \details SmartSealz Development
+ * \details 
+ * \author Brandon Mord
+ * \date 2017-2019
+ */
+ 
 #include "globalIncludes.h"
+#include "MPU6050.h"
 /*
     All contents of this file were written by Brandon Mord 
     bdrmord001@gmail.com
@@ -421,7 +430,7 @@ int main(int argc, char *argv[])
 		fprintf(outF,"%d %.2f %d %d",(int) fAlt,fPres,(int) pitchDeg,(int) rollDeg);
 		fclose(outF);
 		//Read at 10HZ (10 times per second)
-		usleep(100);
+		//usleep(100);
   return 0;
 }
 /*
