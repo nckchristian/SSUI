@@ -1,9 +1,21 @@
+/*!
+ * \brief SmartSealz Project
+ * \details SmartSealz Development
+ * \details Includes and Global Variables Used by Glade Interface Source Code
+ * \author Brandon Mord
+ * \date 2017-2019
+ */
+ 
+ 
 /*
     All contents of this file were written by Brandon Mord 
     bdrmord001@gmail.com
     
     Original owner of git code Bmord01
 */
+/** \defgroup globalInclude Global Includes for Glade Source
+ * @{
+ */
 #include <gtk/gtk.h>
 #include <glib.h>
 #include  <stdio.h>
@@ -21,8 +33,6 @@
 #include <pthread.h>
 
 #define PI 3.14159265359
-/******************************************************************************/
-/**************************** Variables ***************************************/
 //Full Version Variables
 float HighSensePressureEB,
     HighSensePitchEB,
@@ -84,10 +94,9 @@ char cmd1[50];
 
 
 FILE *inGPS, *inFile, *inADSB, *inHR;
-pthread_t fileTID[4];
+pthread_t fileTID[5];
 pthread_t toggleTID;
-/*************************************************************************************************************/
-/****************************************GTK Pointer Definition **********************************************/
+
 GtkButton *btnStart,*btnEnd,*btnSet,*btnCalHap;
 
 GtkLabel *lblAltitude,*lblPitch,*lblRoll, *lblGS, *lblGPST,*lblHR, *lblCurr,*lblTraffic,*warning;
@@ -97,7 +106,7 @@ GtkSwitch *Sense1,*Sense2,*Sense3,*Sense4,*Sense5,*Sense6;
 GtkToggleButton *tbAlt,*tbPitch,*tbRoll,*tbGS,*tbGPST,*tbHR,*tbActiveTraffic, *tbOneM, *tbFiveM, *tbTenM;
 
 GtkSpinButton *spAltim;
-/*****************************************************************************/
+
 void *upHaptic(void *vargp);
 void *upTraffic(void *vargp);
 double CalcDist(double inLat,double inLong);
@@ -112,6 +121,7 @@ int readFileThread = -1;
 int readADSBThread = -1;
 int readHRThread = -1;
 int checkTogglesThread = -1;
+int navThread = -1;
 
 FILE *inGPS;
 
@@ -128,4 +138,8 @@ enum pattern{
     RightOfTrack,
     LeftOfTrack
 };
-
+/** \defgroup GladeFunctions Functions
+ * @{
+ * @}
+ */  /*end of GladeFunctions */
+/** @} */ /* end of globalInclude */
