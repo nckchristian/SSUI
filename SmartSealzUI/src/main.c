@@ -5,7 +5,7 @@
  * \author Brandon Mord
  * \date 2017-2019
  */
- 
+
 /** \defgroup gladeMain Main Glade Source
  * @brief Source Code Controlling Main Interface
  * @{
@@ -66,10 +66,10 @@ void *readGPS(void * arg){
     }
     else{
         fscanf(inGPS,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&GPSLat, &GPSLong, &GPSCourse, &GPSGroundSpeed, &ADSBPressure, &ADSBPitch, &ADSBRoll, &ADSBGyroHeading, &ADSBMagHeading);// Read all information from file gpsdata.txt
-        
+
         sprintf(destGroundS,"%.2lf",GPSGroundSpeed);
         sprintf(destCourse,"%.2lf",GPSCourse);//Write data to char array to be displayed in label
-        
+
         gtk_label_set_label((GtkLabel *) lblGS,destGroundS);
         gtk_label_set_label((GtkLabel *) lblGPST,destCourse);//Change label to display Info
         fclose(inGPS);
@@ -103,7 +103,7 @@ void *readADSB(void * arg){
 		    count++; //count lines in traffic file
 	    }
         fclose(inADSB);
-        
+
         inADSB = fopen("DataFiles/traffic.txt","r");
 	    char tail[20];
 	    double lat=0.0,lon=0.0;
@@ -170,7 +170,7 @@ void *readADSB(void * arg){
 				    }
 			    }
 			    else{
-				    
+
 			    }
 			    if(TrafficCount!=0){
 			        if(TrafficCount>prevTrafficC){
@@ -215,9 +215,9 @@ void *readHR(void * arg){
 }
 
 void *checkToggles(void* arg){
-    // 
-	//                 Check for any changes in toggle states    
-	// 
+    //
+	//                 Check for any changes in toggle states
+	//
     if(bAltA && !bAlt){
     	bAlt=true;
     	bAltC=true;
@@ -728,7 +728,7 @@ double CalcDist(double inLat,double inLong){
 static gboolean _update(){
     //system("iostat >> CPUData.txt");
 	//system("free -h >> CPUData.txt");
-	
+
 	navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
 	while(navThread != 0){
 	    navThread = pthread_create(&fileTID[4],NULL,runNav,NULL);
@@ -992,56 +992,56 @@ void *upHaptic(void *vargp){
 			break;
 		case initialize:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(0,0,0,0);
 			return NULL;
 		case AboveAlt:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(7,16,16,16);
 			break;
 		case BelowAlt:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(8,12,12,12);
 			break;
 		case AbovePitch:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(7,17,0,0);
 			break;
 		case BelowPitch:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(8,17,0,0);
 			break;
 		case AboveRoll:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(3,17,0,0);
 			usleep(10000);
 			haptic(2,17,0,0);
 			break;
 		case BelowRoll:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(1,17,0,0);
 			usleep(10000);
 			haptic(4,17,0,0);
 			break;
 		case OffGroundSpeed:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(9,17,0,0);
 			break;
 		case RightOfTrack:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(5,5,0,0);
 			break;
 		case LeftOfTrack:
       system("date >> errorsLog.txt");
-      fprintf(err, " Error Type %d",initialize);
+      fprintf(err, "%d",initialize);
 			haptic(6,5,0,0);
 			break;
 		case 11:
