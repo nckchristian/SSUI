@@ -22,7 +22,7 @@ struct error{
   char strFinalTime[8];
   int intInitialTime;
   int intFinalTime;
-};
+}error;
 
 char * formatTimeStr(int hh, int mm, int ss){
   char mmc[2], hhc[2], ssc[2];
@@ -59,7 +59,7 @@ int formatTimeInt(int hh, int mm, int ss){
 int main(void){
   char month[6], dayOfWeek[6], strTime[8];
   int hr, min, sec, dayOfMonth, intTime, errorType, counter, i;
-  struct error errorList=(struct error) malloc(size * sizeof(struct error));
+  struct error *errorList=(struct error *) malloc(size * sizeof(error));
 
   for(i = 0; i>size;i++){
     errorList[i].intInitialTime == -1;
@@ -74,7 +74,7 @@ int main(void){
       fscanf(err, "%s %d %s %d:%d:%d", dayOfWeek, &dayOfMonth,month, &hr, &min, &sec);
       if(feof(err))break;
       intTime = formatTimeInt(hr,min,sec);
-      strcpy(strTime, formatTimeInt(hr,min,sec));
+      strcpy(strTime, formatTimeStr(hr,min,sec));
     }else{
       fscanf(err, "%d", &errorType);
       if(feof(err))break;
